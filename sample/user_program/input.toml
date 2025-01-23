@@ -1,0 +1,31 @@
+[base]
+dimension = 3
+output_dir = "output"
+
+[solver]
+name = "feff"
+
+[solver.config]
+feff_exec_file  = "../bin/feff85L"
+feff_output_file = "./chi.dat"
+remove_work_dir = true
+#use_tmpdir = true
+
+[solver.param]
+string_list = ["value_01", "value_02","value_03"]
+polarization_list = ["polarization_01", "polarization_02", "polarization_03"]
+polarization = [ [0,1,0], [1,0,0], [0,0,1] ]
+calculated_first_k = 3.6
+calculated_last_k = 10
+
+[solver.reference]
+path_epsilon = "mock_data.txt"
+
+[algorithm]
+name = "minsearch"
+label_list = ["x_S", "y_S", "z_S"]
+
+[algorithm.param]
+min_list = [-2.0, -2.0, -2.0]
+max_list = [ 2.0,  2.0,  2.0]
+initial_list = [ 1.12, 0.96, -1.57 ]

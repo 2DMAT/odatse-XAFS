@@ -1,0 +1,29 @@
+[base]
+dimension = 2
+output_dir = "output"
+
+[solver]
+name = "feff"
+
+[solver.config]
+feff_exec_file  = "../bin/feff85L"
+feff_output_file = "./chi.dat"
+remove_work_dir = false
+#use_tmpdir = false
+
+[solver.param]
+string_list = ["@x", "@y"]
+polarization_list = ["@Ex", "@Ey", "@Ez"]
+polarization = [ [0,1,0], [1,0,0], [0,0,1] ]
+calculated_first_k = 3.6
+calculated_last_k = 10
+
+[solver.reference]
+path_epsilon = "ref_mock_data.txt"
+
+[algorithm]
+name = "mapper"
+label_list = ["x_S","y_S"]
+
+[algorithm.param]
+mesh_path = "MeshData.txt"
