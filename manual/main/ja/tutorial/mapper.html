@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html lang="ja" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>グリッド型探索 &#8212; ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0-dev ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=f63d8bfa" />
+    <link rel="stylesheet" type="text/css" href="../_static/haiku.css?v=dfa0e015" />
+    <script src="../_static/documentation_options.js?v=3b7831b5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/translations.js?v=91613774"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="ユーザープログラムによる解析" href="user_program.html" />
+    <link rel="prev" title="XAFS 順問題ソルバー" href="feff.html" /> 
+  </head><body>
+      <div class="header" role="banner"><h1 class="heading"><a href="../index.html">
+          <span>ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0-dev ドキュメント</span></a></h1>
+        <h2 class="heading"><span>グリッド型探索</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="Top">
+      
+        <p>
+        «&#160;&#160;<a href="feff.html">XAFS 順問題ソルバー</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">コンテンツ</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="user_program.html">ユーザープログラムによる解析</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <section id="id1">
+<h1>グリッド型探索<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<p>ここでは、グリッド型探索を行い、分光スペクトルから原子座標を解析する方法について説明します。
+グリッド型探索はMPIに対応しています。
+探索グリッドは入力パラメータをもとに等間隔のメッシュとして生成します。</p>
+<section id="id2">
+<h2>サンプルファイルの場所<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p>サンプルファイルは <code class="docutils literal notranslate"><span class="pre">sample/mapper</span></code> にあります。
+フォルダには以下のファイルが格納されています。</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">mock_data.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">template.txt</span></code></p>
+<p>メインプログラムでの計算を進めるための参照ファイル</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ref_ColorMap.txt</span></code></p>
+<p>計算が正しく実行されたか確認するためのファイル(本チュートリアルを行うことで得られる <code class="docutils literal notranslate"><span class="pre">ColorMap.txt</span></code> の回答)。</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">input.toml</span></code></p>
+<p>メインプログラムの入力ファイル</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prepare.sh</span></code> , <code class="docutils literal notranslate"><span class="pre">do.sh</span></code></p>
+<p>本チュートリアルを一括計算するために準備されたスクリプト</p>
+</li>
+</ul>
+<p>以下、これらのファイルについて説明したあと、実際の計算結果を紹介します。</p>
+</section>
+<section id="id3">
+<h2>参照ファイルの説明<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">template.txt</span></code> は FEFF の入力ファイルのテンプレートです。
+ここでは、S原子の座標 x, y, z のうち、計算量を減らすために z = -1.60 に固定して x, y の 2次元空間の探索を行います。
+以下にファイルの内容を示しますが、 <code class="docutils literal notranslate"><span class="pre">&#64;x</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;y</span></code> が動かすパラメータに相当します。</p>
+<p>リファレンスとなる測定データを模したデータは <code class="docutils literal notranslate"><span class="pre">mock_data.txt</span></code> です。偏光方向を3通りにとったスペクトルデータが格納されています。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">This</span> <span class="n">feff</span><span class="o">.</span><span class="n">inp</span> <span class="n">file</span> <span class="n">generated</span> <span class="n">by</span> <span class="n">ATOMS</span><span class="p">,</span> <span class="n">version</span> <span class="mf">2.50</span>
+<span class="o">*</span> <span class="n">ATOMS</span> <span class="n">written</span> <span class="n">by</span> <span class="ow">and</span> <span class="n">copyright</span> <span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="n">Bruce</span> <span class="n">Ravel</span><span class="p">,</span> <span class="mi">1992</span><span class="o">-</span><span class="mi">1999</span>
+
+<span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span>
+<span class="o">*</span>       <span class="n">total</span> <span class="n">mu</span> <span class="o">=</span>      <span class="mf">725.4</span> <span class="n">cm</span><span class="o">^-</span><span class="mi">1</span><span class="p">,</span> <span class="n">delta</span> <span class="n">mu</span> <span class="o">=</span>      <span class="mf">610.0</span> <span class="n">cm</span><span class="o">^-</span><span class="mi">1</span>
+<span class="o">*</span>       <span class="n">specific</span> <span class="n">gravity</span> <span class="o">=</span> <span class="mf">12.006</span><span class="p">,</span> <span class="n">cluster</span> <span class="n">contains</span>   <span class="mi">55</span> <span class="n">atoms</span><span class="o">.</span>
+<span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span>
+<span class="o">*</span>       <span class="n">mcmaster</span> <span class="n">corrections</span><span class="p">:</span>  <span class="mf">0.00020</span> <span class="n">ang</span><span class="o">^</span><span class="mi">2</span> <span class="ow">and</span>  <span class="mf">0.770E-07</span> <span class="n">ang</span><span class="o">^</span><span class="mi">4</span>
+<span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span> <span class="o">--</span> <span class="o">*</span>
+
+<span class="n">TITLE</span>   <span class="n">Sample_data</span>
+
+<span class="n">EDGE</span>      <span class="n">K</span>
+<span class="n">S02</span>       <span class="mf">1.0</span>
+
+<span class="o">*</span>         <span class="n">pot</span>    <span class="n">xsph</span>  <span class="n">fms</span>   <span class="n">paths</span> <span class="n">genfmt</span> <span class="n">ff2chi</span>
+<span class="n">CONTROL</span>   <span class="mi">1</span>      <span class="mi">1</span>      <span class="mi">1</span>      <span class="mi">1</span>      <span class="mi">1</span>      <span class="mi">1</span>
+<span class="n">PRINT</span>     <span class="mi">0</span>      <span class="mi">0</span>      <span class="mi">0</span>      <span class="mi">0</span>      <span class="mi">0</span>      <span class="mi">0</span>
+
+<span class="o">*</span>         <span class="n">r_scf</span>   <span class="p">[</span> <span class="n">l_scf</span>  <span class="n">n_scf</span>  <span class="n">ca</span> <span class="p">]</span>
+<span class="o">*</span><span class="n">SCF</span>       <span class="mf">6.05142</span>     <span class="mi">0</span>     <span class="mi">15</span>     <span class="mf">0.1</span>
+
+
+<span class="n">EXAFS</span>    <span class="mi">20</span>
+<span class="n">RPATH</span>    <span class="mi">6</span>
+
+<span class="o">*</span>         <span class="n">kmax</span>  <span class="p">[</span> <span class="n">delta_k</span>  <span class="n">delta_e</span> <span class="p">]</span>
+<span class="o">*</span><span class="n">XANES</span>     <span class="mf">4.0</span>     <span class="mf">0.07</span>     <span class="mf">0.5</span>
+<span class="o">*</span>         <span class="n">r_fms</span>     <span class="p">[</span> <span class="n">l_fms</span> <span class="p">]</span>
+<span class="o">*</span><span class="n">FMS</span>       <span class="mf">6.05142</span>    <span class="mi">0</span>
+<span class="o">*</span>
+<span class="o">*</span><span class="n">RPATH</span>     <span class="mf">0.10000</span>
+<span class="o">*</span>         <span class="n">emin</span>  <span class="n">emax</span>  <span class="n">resolution</span>
+<span class="o">*</span><span class="n">LDOS</span>      <span class="o">-</span><span class="mi">20</span>    <span class="mi">20</span>   <span class="mf">0.1</span>
+
+
+<span class="n">POTENTIALS</span>
+<span class="o">*</span>   <span class="n">ipot</span>   <span class="n">z</span> <span class="p">[</span> <span class="n">label</span>   <span class="n">l_scmt</span>  <span class="n">l_fms</span>  <span class="n">stoichiometry</span> <span class="p">]</span>
+       <span class="mi">0</span>   <span class="mi">28</span>    <span class="n">Ni</span>
+       <span class="mi">1</span>   <span class="mi">16</span>    <span class="n">S</span>
+       <span class="mi">2</span>    <span class="mi">8</span>     <span class="n">O</span>
+<span class="n">NLEG</span>         <span class="mi">2</span>
+
+<span class="o">*</span><span class="n">CRITERIA</span>     <span class="mf">4.00</span>     <span class="mf">2.50</span>
+
+<span class="o">*</span><span class="n">DEBYE</span>        <span class="mf">300.00</span>   <span class="mf">340.00</span>
+
+<span class="o">*</span> <span class="n">CORRECTION</span> <span class="mf">4.50</span> <span class="mf">0.5</span>
+<span class="o">*</span> <span class="n">RMULTIPLIER</span> <span class="mf">1.00</span>
+<span class="o">*</span> <span class="n">ION</span> <span class="mi">0</span> <span class="mf">0.2</span>
+<span class="o">*</span> <span class="n">ION</span> <span class="mi">1</span> <span class="mf">0.2</span>
+
+<span class="o">*</span>         <span class="n">ixc</span>  <span class="p">[</span> <span class="n">Vr</span>  <span class="n">Vi</span> <span class="p">]</span>
+<span class="n">EXCHANGE</span>  <span class="mi">0</span>    <span class="o">-</span><span class="mi">5</span>    <span class="mi">0</span>
+<span class="n">SIG2</span>  <span class="mf">0.0016</span>
+<span class="n">POLARIZATION</span>   <span class="nd">@Ex</span> <span class="nd">@Ey</span> <span class="nd">@Ez</span>
+
+<span class="n">ATOMS</span>
+<span class="mf">0.0000</span> <span class="mf">0.0000</span> <span class="mf">0.0000</span> <span class="mi">0</span> <span class="n">Ni</span>
+<span class="nd">@x</span> <span class="nd">@y</span> <span class="o">-</span><span class="mf">1.6000</span> <span class="mi">1</span> <span class="n">S</span>
+<span class="mf">1.1400</span> <span class="mf">1.2800</span> <span class="mf">0.9700</span> <span class="mi">2</span> <span class="n">O</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>入力ファイルの説明<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<p>ここでは、メインプログラム用の入力ファイル <code class="docutils literal notranslate"><span class="pre">input.toml</span></code> について説明します。
+パラメータの詳細についてはマニュアルの入出力の章を参照してください。
+以下は、サンプルファイルにある <code class="docutils literal notranslate"><span class="pre">input.toml</span></code> の内容です。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">base</span><span class="p">]</span>
+<span class="n">dimension</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">output_dir</span> <span class="o">=</span> <span class="s2">&quot;output&quot;</span>
+
+<span class="p">[</span><span class="n">solver</span><span class="p">]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;feff&quot;</span>
+
+<span class="p">[</span><span class="n">solver</span><span class="o">.</span><span class="n">config</span><span class="p">]</span>
+<span class="n">feff_exec_file</span>  <span class="o">=</span> <span class="s2">&quot;../bin/feff85L&quot;</span>
+<span class="n">feff_output_file</span> <span class="o">=</span> <span class="s2">&quot;./chi.dat&quot;</span>
+<span class="n">remove_work_dir</span> <span class="o">=</span> <span class="n">true</span>
+<span class="c1">#use_tmpdir = true</span>
+
+<span class="p">[</span><span class="n">solver</span><span class="o">.</span><span class="n">param</span><span class="p">]</span>
+<span class="n">string_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@x&quot;</span><span class="p">,</span> <span class="s2">&quot;@y&quot;</span><span class="p">]</span>
+<span class="n">polarization_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@Ex&quot;</span><span class="p">,</span> <span class="s2">&quot;@Ey&quot;</span><span class="p">,</span> <span class="s2">&quot;@Ez&quot;</span><span class="p">]</span>
+<span class="n">polarization</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="p">]</span>
+<span class="n">calculated_first_k</span> <span class="o">=</span> <span class="mf">3.6</span>
+<span class="n">calculated_last_k</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="p">[</span><span class="n">solver</span><span class="o">.</span><span class="n">reference</span><span class="p">]</span>
+<span class="n">path_epsilon</span> <span class="o">=</span> <span class="s2">&quot;mock_data.txt&quot;</span>
+
+<span class="p">[</span><span class="n">algorithm</span><span class="p">]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;mapper&quot;</span>
+<span class="n">label_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x_S&quot;</span><span class="p">,</span> <span class="s2">&quot;y_S&quot;</span><span class="p">]</span>
+
+<span class="p">[</span><span class="n">algorithm</span><span class="o">.</span><span class="n">param</span><span class="p">]</span>
+<span class="n">min_list</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">]</span>
+<span class="n">max_list</span> <span class="o">=</span> <span class="p">[</span> <span class="mf">2.0</span><span class="p">,</span>  <span class="mf">2.0</span><span class="p">]</span>
+<span class="n">num_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">41</span><span class="p">,</span> <span class="mi">41</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>最初に <code class="docutils literal notranslate"><span class="pre">[base]</span></code> セクションについて説明します。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dimension</span></code> は最適化したい変数の個数で、今の場合は <code class="docutils literal notranslate"><span class="pre">template.txt</span></code> で説明したように2つの変数の最適化を行うので、<code class="docutils literal notranslate"><span class="pre">2</span></code> を指定します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_dir</span></code> は出力先のディレクトリ名です。省略した場合はプログラムを実行したディレクトリになります。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">[solver]</span></code> セクションではメインプログラムの内部で使用するソルバーとその設定を指定します。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> は使用したいソルバーの名前です。 <code class="docutils literal notranslate"><span class="pre">feff</span></code> に固定されています。</p></li>
+</ul>
+<p>ソルバーの設定は、サブセクションの <code class="docutils literal notranslate"><span class="pre">[solver.config]</span></code>, <code class="docutils literal notranslate"><span class="pre">[solver.param]</span></code>, <code class="docutils literal notranslate"><span class="pre">[solver.reference]</span></code> で行います。</p>
+<p><code class="docutils literal notranslate"><span class="pre">[solver.config]</span></code> セクションではメインプログラム内部で呼び出す <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> に関するオプションを指定します。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">feff_exec_file</span></code> は FEFF の実行ファイルのパスを指定します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">feff_output_file</span></code> は FEFF の出力ファイルのうち、XAFS スペクトルデータを格納するファイルを指定します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remove_work_dir</span></code> は各 iteration ごとに FEFF の出力ファイルを削除するオプションです。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_tmpdir</span></code> は FEFF の出力ファイルの書き出し先を /tmp にするオプションです。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">[solver.param]</span></code> セクションでは FEFF の入力に関するオプションを指定します。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">string_list</span></code> は、 <code class="docutils literal notranslate"><span class="pre">template.txt</span></code> で読み込む、動かしたい変数の名前のリストです。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">polarization_list</span></code> は、 <code class="docutils literal notranslate"><span class="pre">template.txt</span></code> で読み込む、偏光ベクトルの要素の名前のリストです。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">polarization</span></code> は、偏光ベクトルのセットを指定します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calculated_first_k</span></code>, <code class="docutils literal notranslate"><span class="pre">calculated_last_k</span></code> は、計算結果と測定データを比較する際の波数 <span class="math notranslate nohighlight">\(k\)</span> の範囲(下端・上端)を指定します。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">[solver.reference]</span></code> セクションでは、リファレンスとなる測定データに関するオプションを指定します。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">path_epsilon</span></code> は実験データが置いてあるパスを指定します。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">[algorithm]</span></code> セクションでは、使用するアルゴリスムとその設定をします。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> は使用したいアルゴリズムの名前です。このチュートリアルではグリッド探索による解析を行うので <code class="docutils literal notranslate"><span class="pre">mapper</span></code> を指定します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">label_list</span></code> は、変数の値を出力する際につけるラベル名のリストです。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">[algorithm.param]</span></code> セクションでは、探索するパラメータの範囲や初期値を指定します。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">min_list</span></code>, <code class="docutils literal notranslate"><span class="pre">max_list</span></code>, <code class="docutils literal notranslate"><span class="pre">num_list</span></code> は、探索グリッドの範囲と分割数を指定します。</p></li>
+</ul>
+<p>その他、入力ファイルで指定可能なパラメータの詳細については入出力の章をご覧ください。</p>
+</section>
+<section id="id5">
+<h2>計算実行<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<p>最初にサンプルファイルが置いてあるフォルダへ移動します(以下、本ソフトウェアをダウンロードしたディレクトリ直下にいることを仮定します).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd sample/mapper
+</pre></div>
+</div>
+<p>順問題の時と同様に <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> をコピーします。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cp ../../feff8.5light/build/feff85L .
+</pre></div>
+</div>
+<p>メインプログラムを実行します(計算時間は通常のPCで10分程度で終わります)。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mpiexec -np 4 odatse-XAFS input.toml | tee log.txt
+</pre></div>
+</div>
+<p>ここではプロセス数4のMPI並列を用いた計算を行っています。
+実行すると、output ディレクトリ内に各ランクのフォルダが作成され、その中にグリッドのidがついたサブフォルダ <code class="docutils literal notranslate"><span class="pre">LogXXXX_00000000</span></code>  (<code class="docutils literal notranslate"><span class="pre">XXXX</span></code> がグリッドのid) が作成されます
+以下の様な出力が標準出力に書き出されます。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span>            <span class="p">:</span> <span class="n">mapper</span>
+<span class="n">label_list</span>      <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;x_S&#39;</span><span class="p">,</span> <span class="s1">&#39;y_S&#39;</span><span class="p">]</span>
+<span class="n">param</span><span class="o">.</span><span class="n">min_list</span>  <span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">param</span><span class="o">.</span><span class="n">max_list</span>  <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">param</span><span class="o">.</span><span class="n">num_list</span>  <span class="p">:</span> <span class="p">[</span><span class="mi">41</span><span class="p">,</span> <span class="mi">41</span><span class="p">]</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">1681</span>
+<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
+<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">4.844740647136345</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.27493407174594</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">3.6169659676212285</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">8.642321902041868</span>
+<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000000_00000000</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">2</span><span class="o">/</span><span class="mi">1681</span>
+<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.90000000</span>
+<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">4.868151722936279</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.3209654636690353</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">3.2810650215301114</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">9.00242468360969</span>
+<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000001_00000000</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">3</span><span class="o">/</span><span class="mi">1681</span>
+<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.80000000</span>
+<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">4.705703125161947</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.2501916741803463</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">2.7571748926393247</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">9.10974280866617</span>
+<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000002_00000000</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">4</span><span class="o">/</span><span class="mi">1681</span>
+<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.70000000</span>
+<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">4.39649319022788</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.1206013940826995</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">2.2147936131325205</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">8.85408456346842</span>
+<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000003_00000000</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">5</span><span class="o">/</span><span class="mi">1681</span>
+<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.60000000</span>
+<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">3.9604564867417746</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">1.983521919088911</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">1.743478238726725</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">8.154369302409687</span>
+<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000004_00000000</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">6</span><span class="o">/</span><span class="mi">1681</span>
+<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.50000000</span>
+<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">3.541334572415026</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">1.918749679792313</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">1.4179530692349396</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">7.287300968217825</span>
+<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000005_00000000</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;x</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;y</span></code> に各メッシュでの候補パラメータと、その時の <code class="docutils literal notranslate"><span class="pre">R-factor</span></code> が出力されます。
+最終的にグリッド上の全ての点で計算された <code class="docutils literal notranslate"><span class="pre">R-factor</span></code> は <code class="docutils literal notranslate"><span class="pre">output/ColorMap.txt</span></code> に出力されます。
+今回の場合は</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="mf">2.000000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">4.844741</span>
+<span class="o">-</span><span class="mf">1.900000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">4.868152</span>
+<span class="o">-</span><span class="mf">1.800000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">4.705703</span>
+<span class="o">-</span><span class="mf">1.700000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">4.396493</span>
+<span class="o">-</span><span class="mf">1.600000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">3.960456</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>のように得られます。1, 2列目に <code class="docutils literal notranslate"><span class="pre">&#64;x</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;y</span></code> の値が、3列目に <code class="docutils literal notranslate"><span class="pre">R-factor</span></code> が記載されます。</p>
+<p>なお、一括計算するスクリプトとして <code class="docutils literal notranslate"><span class="pre">do.sh</span></code> を用意しています。
+<code class="docutils literal notranslate"><span class="pre">do.sh</span></code> では <code class="docutils literal notranslate"><span class="pre">ColorMap.dat</span></code> と <code class="docutils literal notranslate"><span class="pre">ref_ColorMap.dat</span></code> の差分も比較しています。
+以下、説明は割愛しますが、その中身を掲載します。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
+
+sh<span class="w"> </span>prepare.sh
+
+<span class="nb">time</span><span class="w"> </span>mpiexec<span class="w"> </span>-np<span class="w"> </span><span class="m">4</span><span class="w"> </span>odatse-XAFS<span class="w"> </span>input.toml
+
+<span class="nb">echo</span><span class="w"> </span>diff<span class="w"> </span>output/ColorMap.txt<span class="w"> </span>ref_ColorMap.txt
+<span class="nv">res</span><span class="o">=</span><span class="m">0</span>
+diff<span class="w"> </span>output/ColorMap.txt<span class="w"> </span>ref_ColorMap.txt<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nv">res</span><span class="o">=</span><span class="nv">$?</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$res</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span><span class="nb">echo</span><span class="w"> </span>TEST<span class="w"> </span>PASS
+<span class="w">  </span><span class="nb">true</span>
+<span class="k">else</span>
+<span class="w">  </span><span class="nb">echo</span><span class="w"> </span>TEST<span class="w"> </span>FAILED:<span class="w"> </span>ColorMap.txt<span class="w"> </span>and<span class="w"> </span>ref_ColorMap.txt<span class="w"> </span>differ
+<span class="w">  </span><span class="nb">false</span>
+<span class="k">fi</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>計算結果の可視化<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ColorMap.txt</span></code> を図示することで、 <code class="docutils literal notranslate"><span class="pre">R-factor</span></code> の小さいパラメータがどこにあるかを推定することができます。
+以下のコマンドを入力すると 2次元パラメータ空間の図 <code class="docutils literal notranslate"><span class="pre">ColorMapFig.png</span></code> が作成されます。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python3 plot_colormap_2d.py -o ColorMapFig.png
+</pre></div>
+</div>
+<p>作成された図を見ると、(<span class="math notranslate nohighlight">\(\pm 1.2\)</span>, <span class="math notranslate nohighlight">\(\pm 0.8\)</span>) 付近に最小値があることがわかります。</p>
+<figure class="align-default" id="id7">
+<img alt="../_images/plot_mapper.png" src="../_images/plot_mapper.png" />
+<figcaption>
+<p><span class="caption-text">S原子の x, y 座標に対する R-factor のプロット。z = -1.60 に固定。</span><a class="headerlink" href="#id7" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="Bottom">
+      
+        <p>
+        «&#160;&#160;<a href="feff.html">XAFS 順問題ソルバー</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">コンテンツ</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="user_program.html">ユーザープログラムによる解析</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+    &#169; 著作権 2024-, Institute for Solid State Physics, University of Tokyo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    </div>
+  </body>
+</html>
