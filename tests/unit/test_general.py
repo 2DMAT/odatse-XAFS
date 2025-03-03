@@ -22,7 +22,7 @@ def test_parameters():
 
     input_data = """
     [solver]
-    name = "feff"
+    name = "xafs"
     dimension = 3
 
     [solver.config]
@@ -73,19 +73,43 @@ def test_input_file():
             info_s = SolverInfo(**info.solver)
             input = Input(info.base, info_s)
 
-            input.prepare(xval, arg)
-
-            data_dir = "Log{:08d}_{:08d}".format(*arg)
+            subdirs = input.prepare(xval, arg)
 
             npol = len(info_s.param.polarization)
             for idx in range(1, 1+npol):
-                with open(os.path.join(data_dir, "call_{:02d}".format(idx), "feff.inp"), "r") as f:
+                with open(os.path.join("call_{:02d}".format(idx), "feff.inp"), "r") as f:
                     inp = f.readlines()
                 with open(os.path.join(test_dir, "feff.in_{:d}_ref".format(idx)), "r") as f:
                     inp_ref = f.readlines()
 
                 for i, (a, b) in enumerate(zip(inp_ref, inp)):
                     assert a == b, "call_{:02d}/feff.in: line {} differs".format(idx, i)
+
+def test_evaluate():
+    import odatse
+    from XAFS import Solver
+    from XAFS.parameter import SolverInfo
+    import shutil
+    from tempfile import TemporaryDirectory
+    import tomli
+
+    xval = [1.12, 0.96, -1.57]
+    arg = (13, 7)
+    fval = 0.22284188252224896
+
+    test_dir = os.path.dirname(__file__)
+
+    with open(os.path.join(test_dir, "input.toml"), "rb") as f:
+        params = tomli.load(f)
+
+    info = odatse.Info(params)
+    solver = Solver(info)
+
+    with TemporaryDirectory() as work_dir:
+        with switch_dir(work_dir):
+            f = solver.evaluate(xval, arg)
+
+    assert f == fval
 
 def test_get_results():
     import odatse
@@ -105,7 +129,6 @@ def test_get_results():
     with open(os.path.join(test_dir, "input.toml"), "rb") as f:
         params = tomli.load(f)
 
-        
     with TemporaryDirectory() as work_dir:
         with switch_dir(work_dir):
             info = odatse.Info(params)
@@ -119,7 +142,7 @@ def test_get_results():
 
             shutil.copy(os.path.join(test_dir, "mock_data.txt"), "mock_data.txt")
 
-            output = Output(info.base, info_s)
+            output = Output(info_s)
 
             v = output.get_results(xval, subdirs)
             assert np.isclose(v, fval)
