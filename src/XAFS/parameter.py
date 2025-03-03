@@ -156,37 +156,3 @@ class SolverInfo(BaseModel):
         if not all([len(v) == len(self.param.polarization_list) for v in self.param.polarization]):
             raise ValueError("lengths of polarization elements are not 3")
         return self
-
-
-if __name__ == "__main__":
-    import tomli
-    from devtools import pprint
-
-    input_data = """
-[solver]
-name = "xafs"
-dimension = 3
-
-[solver.config]
-#feff_exec_file  = "../bin/feff85L"
-feff_output_file = "./chi.dat"
-remove_work_dir = false
-use_tmpdir = false
-
-[solver.param]
-string_list = ["value_01", "value_02","value_03"]
-polarization_list = ["polarization_01", "polarization_02", "polarization_03"]
-polarization = [ [0,1,0], [1,0,0], [0,0,1] ]
-#calculated_first_k = 3.6
-#calculated_last_k = 10
-k_range = [3.6, 10]
-
-[solver.reference]
-path_epsilon = "mock_data.txt"
-
-"""
-
-    params = tomli.loads(input_data)
-    si = SolverInfo(**params["solver"])
-
-    pprint(si)
