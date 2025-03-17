@@ -30,8 +30,8 @@ import odatse
 from .input import Input
 from .output import Output
 from .parameter import SolverInfo
-from odatse.solver.util import Workdir, set_solver_path, run_by_subprocess
-
+#from odatse.solver.util import Workdir, set_solver_path, run_by_subprocess
+from .util import Workdir, set_solver_path, run_by_subprocess
 
 class Solver(odatse.solver.SolverBase):
     """

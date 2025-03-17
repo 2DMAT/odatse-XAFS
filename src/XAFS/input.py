@@ -21,7 +21,8 @@ import shutil
 from pathlib import Path
 from typing import List, Dict, Optional, TYPE_CHECKING
 
-from odatse.solver.template import Template
+#from odatse.solver.template import Template
+from .template import Template
 
 class Input(object):
     """
