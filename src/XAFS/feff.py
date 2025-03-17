@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see http://www.gnu.org/licenses/.
-# 
+#
 
 import os
 import sys
@@ -24,12 +24,11 @@ from typing import List
 from pathlib import Path
 
 import numpy as np
-from pydantic import ValidationError
 
 import odatse
 from .input import Input
 from .output import Output
-from .parameter import SolverInfo
+from .parameter import parse_solver_info
 #from odatse.solver.util import Workdir, set_solver_path, run_by_subprocess
 from .util import Workdir, set_solver_path, run_by_subprocess
 
@@ -52,17 +51,12 @@ class Solver(odatse.solver.SolverBase):
         super().__init__(info)
         self._name = "xafs"
 
-        try:
-            info_solver = SolverInfo(**info.solver)
-        except ValidationError as e:
-            print("ERROR: {}".format(e))
-            sys.exit(1)
-        self.info = info_solver
+        self.info = parse_solver_info(**info.solver)
 
-        self.path_to_solver = set_solver_path(info_solver.config.feff_exec_file, self.root_dir)
+        self.path_to_solver = set_solver_path(self.info.config.feff_exec_file, self.root_dir)
 
-        self.input = Input(info.base, info_solver)
-        self.output = Output(info_solver)
+        self.input = Input(info.base, self.info)
+        self.output = Output(self.info)
         self.result = None
 
     def evaluate(self, x: np.ndarray, args=(), nprocs: int = 1, nthreads: int = 1) -> float:

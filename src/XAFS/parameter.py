@@ -156,3 +156,13 @@ class SolverInfo(BaseModel):
         if not all([len(v) == len(self.param.polarization_list) for v in self.param.polarization]):
             raise ValueError("lengths of polarization elements are not 3")
         return self
+
+def parse_solver_info(**kwargs):
+    try:
+        info = SolverInfo(**kwargs)
+    except ValidationError as e:
+        print("----------------")
+        print(str(e))
+        print("----------------")
+        raise ValueError("failed in parsing solver parameters") from e
+    return info
