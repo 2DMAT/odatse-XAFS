@@ -42,7 +42,7 @@ FEFF 8.5 light のソースコード一式を配布サイトのリポジトリ�
 
      $ cd sample/solver
 
-次に ``feff85L`` を ``solver`` ディレクトリにコピーします。
+次に ``feff85L`` を現在のディレクトリにコピーします。
 
 .. code-block::
 
