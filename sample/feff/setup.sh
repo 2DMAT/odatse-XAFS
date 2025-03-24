@@ -8,12 +8,18 @@ fi
 
 cd feff8.5light
 
+patch -p1 < ../feff8.5light_output.patch
+
 if [ -d build ]; then
   rm -rf build
 fi
 mkdir build && cd build
 
 cmake -DCMAKE_Fortran_FLAGS="-fallow-argument-mismatch -std=legacy" ..
+
+#-- for intel compiler, use the following line instead of the above.
+#cmake -DCMAKE_Fortran_COMPILER="ifort" ..
+
 make
 
 cp -p feff85L ../../
