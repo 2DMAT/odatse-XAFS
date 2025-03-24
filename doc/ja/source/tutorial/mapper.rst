@@ -121,9 +121,9 @@
     name = "feff"
 
     [solver.config]
-    feff_exec_file  = "../bin/feff85L"
-    feff_output_file = "./chi.dat"
-    remove_work_dir = true
+    feff_exec_file  = "feff85L"
+    feff_output_file = "chi.dat"
+    #remove_work_dir = true
     #use_tmpdir = true
 
     [solver.param]
@@ -143,7 +143,7 @@
     [algorithm.param]
     min_list = [-2.0, -2.0]
     max_list = [ 2.0,  2.0]
-    num_list = [41, 41]
+    num_list = [21, 21]
         
 最初に ``[base]`` セクションについて説明します。
 
@@ -206,15 +206,14 @@
 
 .. code-block::
 
-    $ cp ../../feff8.5light/build/feff85L .
+    $ cp ../feff/feff85L .
 
-メインプログラムを実行します(計算時間は通常のPCで10分程度で終わります)。
+メインプログラムを実行します。以下のコマンドではプロセス数4のMPI並列を用いた計算を行っています。(計算時間は通常のPCで数分程度で終わります。)
 
 .. code-block::
 
     $ mpiexec -np 4 odatse-XAFS input.toml | tee log.txt
 
-ここではプロセス数4のMPI並列を用いた計算を行っています。
 実行すると、output ディレクトリ内に各ランクのフォルダが作成され、その中にグリッドのidがついたサブフォルダ ``LogXXXX_00000000``  (``XXXX`` がグリッドのid) が作成されます
 以下の様な出力が標準出力に書き出されます。
 
@@ -224,38 +223,37 @@
     label_list      : ['x_S', 'y_S']
     param.min_list  : [-2, -2]
     param.max_list  : [2, 2]
-    param.num_list  : [41, 41]
-    Iteration : 1/1681
+    param.num_list  : [21, 21]
+    Iteration : 1/441
     @x = -2.00000000
     @y = -2.00000000
-    R-factor = 4.844740647136345 Polarization [0.0, 1.0, 0.0] R-factor1 = 2.27493407174594  Polarization [1.0, 0.0, 0.0] R-factor2 = 3.6169659676212285  Polarization [0.0, 0.0, 1.0] R-factor3 = 8.642321902041868 
-    remove directory: Log00000000_00000000
-    Iteration : 2/1681
-    @x = -1.90000000
-    @y = -2.00000000
-    R-factor = 4.868151722936279 Polarization [0.0, 1.0, 0.0] R-factor1 = 2.3209654636690353  Polarization [1.0, 0.0, 0.0] R-factor2 = 3.2810650215301114  Polarization [0.0, 0.0, 1.0] R-factor3 = 9.00242468360969 
-    remove directory: Log00000001_00000000
-    Iteration : 3/1681
+    R-factor = 19.739646449543752 Polarization [0.0, 1.0, 0.0] R-factor1 = 2.23082630928769  Polarization [1.0, 0.0, 0.0] R-factor2 = 3.745102742186708  Polarization [0.0, 0.0, 1.0] R-factor3 = 53.243010297156864 
+    Iteration : 2/441
     @x = -1.80000000
     @y = -2.00000000
-    R-factor = 4.705703125161947 Polarization [0.0, 1.0, 0.0] R-factor1 = 2.2501916741803463  Polarization [1.0, 0.0, 0.0] R-factor2 = 2.7571748926393247  Polarization [0.0, 0.0, 1.0] R-factor3 = 9.10974280866617 
-    remove directory: Log00000002_00000000
-    Iteration : 4/1681
-    @x = -1.70000000
-    @y = -2.00000000
-    R-factor = 4.39649319022788 Polarization [0.0, 1.0, 0.0] R-factor1 = 2.1206013940826995  Polarization [1.0, 0.0, 0.0] R-factor2 = 2.2147936131325205  Polarization [0.0, 0.0, 1.0] R-factor3 = 8.85408456346842 
-    remove directory: Log00000003_00000000
-    Iteration : 5/1681
+    R-factor = 15.870615265918195 Polarization [0.0, 1.0, 0.0] R-factor1 = 2.465225144249503  Polarization [1.0, 0.0, 0.0] R-factor2 = 3.7116841611214517  Polarization [0.0, 0.0, 1.0] R-factor3 = 41.43493649238363 
+    Iteration : 3/441
     @x = -1.60000000
     @y = -2.00000000
-    R-factor = 3.9604564867417746 Polarization [0.0, 1.0, 0.0] R-factor1 = 1.983521919088911  Polarization [1.0, 0.0, 0.0] R-factor2 = 1.743478238726725  Polarization [0.0, 0.0, 1.0] R-factor3 = 8.154369302409687 
-    remove directory: Log00000004_00000000
-    Iteration : 6/1681
-    @x = -1.50000000
+    R-factor = 12.4966032440396 Polarization [0.0, 1.0, 0.0] R-factor1 = 3.4464214082242046  Polarization [1.0, 0.0, 0.0] R-factor2 = 2.6218600524063693  Polarization [0.0, 0.0, 1.0] R-factor3 = 31.421528271488228 
+    Iteration : 4/441
+    @x = -1.40000000
     @y = -2.00000000
-    R-factor = 3.541334572415026 Polarization [0.0, 1.0, 0.0] R-factor1 = 1.918749679792313  Polarization [1.0, 0.0, 0.0] R-factor2 = 1.4179530692349396  Polarization [0.0, 0.0, 1.0] R-factor3 = 7.287300968217825 
-    remove directory: Log00000005_00000000
+    R-factor = 11.698213396270965 Polarization [0.0, 1.0, 0.0] R-factor1 = 3.4791684719050933  Polarization [1.0, 0.0, 0.0] R-factor2 = 1.6240174174998872  Polarization [0.0, 0.0, 1.0] R-factor3 = 29.991454299407913 
+    Iteration : 5/441
+    @x = -1.20000000
+    @y = -2.00000000
+    R-factor = 14.299726412681139 Polarization [0.0, 1.0, 0.0] R-factor1 = 2.2280314879817467  Polarization [1.0, 0.0, 0.0] R-factor2 = 1.5332463231108493  Polarization [0.0, 0.0, 1.0] R-factor3 = 39.13790142695082 
+    Iteration : 6/441
+    @x = -1.00000000
+    @y = -2.00000000
+    R-factor = 21.44097816422594 Polarization [0.0, 1.0, 0.0] R-factor1 = 3.7563622860968673  Polarization [1.0, 0.0, 0.0] R-factor2 = 1.810765574876649  Polarization [0.0, 0.0, 1.0] R-factor3 = 58.7558066317043 
+    Iteration : 7/441
+    @x = -0.80000000
+    @y = -2.00000000
+    R-factor = 28.455902096414444 Polarization [0.0, 1.0, 0.0] R-factor1 = 6.512305703044855  Polarization [1.0, 0.0, 0.0] R-factor2 = 2.004528093101423  Polarization [0.0, 0.0, 1.0] R-factor3 = 76.85087249309706 
     ...
+        
 
 ``@x``, ``@y`` に各メッシュでの候補パラメータと、その時の ``R-factor`` が出力されます。
 最終的にグリッド上の全ての点で計算された ``R-factor`` は ``output/ColorMap.txt`` に出力されます。
@@ -263,11 +261,13 @@
 
 .. code-block::
 
-    -2.000000 -2.000000 4.844741
-    -1.900000 -2.000000 4.868152
-    -1.800000 -2.000000 4.705703
-    -1.700000 -2.000000 4.396493
-    -1.600000 -2.000000 3.960456
+    -2.000000 -2.000000 19.739646
+    -1.800000 -2.000000 15.870615
+    -1.600000 -2.000000 12.496603
+    -1.400000 -2.000000 11.698213
+    -1.200000 -2.000000 14.299726
+    -1.000000 -2.000000 21.440978
+    -0.800000 -2.000000 28.455902
     ...
 
 のように得られます。1, 2列目に ``@x``, ``@y`` の値が、3列目に ``R-factor`` が記載されます。

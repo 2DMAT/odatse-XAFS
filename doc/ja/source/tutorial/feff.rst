@@ -6,7 +6,7 @@ XAFS 順問題ソルバー
 ダウンロード・インストール
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-あらかじめ odatse-XAFS のソースコードをリポジトリから取得しておきます。
+odatse-XAFS のソースコードをリポジトリから取得します。
 
 .. code-block:: bash
 
@@ -14,17 +14,22 @@ XAFS 順問題ソルバー
      $ cd odatse-XAFS
 
 FEFF 8.5 light のソースコード一式を配布サイトのリポジトリから取得し、ビルドします。
+セットアップスクリプトが sample/feff/setup.sh に用意されています。
 
 .. code-block:: bash
 
-     $ git clone https://github.com/eucall-software/feff8.5light.git
-     $ cd feff8.5light
-     $ mkdir build && cd build
-     $ cmake ..
-     $ make
+     $ cd sample/feff
+     $ sh ./setup.sh
 
-cmake のオプション等は実行環境に応じて適宜指定してください。
-makeが成功すると ``feff85L`` が作成されます。
+ビルドが成功すると、現在のディレクトリ内に ``feff85L`` が作成されます。
+
+.. note::
+
+   intel Fortran コンパイラを利用する場合は、setup.sh の内容を書き換えて実行してください。
+		
+.. note::
+
+   上記のセットアップスクリプトでは、FEFFが出力する中間ファイルのサイズを減らすため、不要なファイルの出力を抑制するパッチを適用しています。
 		
 
 計算実行
@@ -32,18 +37,16 @@ makeが成功すると ``feff85L`` が作成されます。
 
 このチュートリアルでは実際に FEFF を使った計算をしてみます。
 サンプルとなる入力ファイルは odatse-XAFS の ``sample/solver`` 以下にあります。
-まず、このフォルダを適当な作業用フォルダ ``work`` にコピーします。
 
 .. code-block::
 
-     $ cp -r sample/solver work
-     $ cd work
+     $ cd sample/solver
 
-次に ``feff85L`` を ``work`` にコピーします。
+次に ``feff85L`` を ``solver`` ディレクトリにコピーします。
 
 .. code-block::
 
-     $ cp ../feff8.5light/build/feff85L .
+     $ cp ../feff/feff85L .
 
 ``feff85L`` を実行します。入力ファイルは ``feff.inp`` (ファイル名は固定) です。
 
