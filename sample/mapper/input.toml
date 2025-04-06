@@ -6,9 +6,9 @@ output_dir = "output"
 name = "feff"
 
 [solver.config]
-feff_exec_file  = "../bin/feff85L"
-feff_output_file = "./chi.dat"
-remove_work_dir = true
+feff_exec_file  = "../feff/feff85L"
+feff_output_file = "chi.dat"
+#remove_work_dir = true
 #use_tmpdir = true
 
 [solver.param]
@@ -28,4 +28,4 @@ label_list = ["x_S","y_S"]
 [algorithm.param]
 min_list = [-2, -2]
 max_list = [ 2,  2]
-num_list = [41, 41]
+num_list = [21, 21]

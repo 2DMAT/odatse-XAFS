@@ -6,9 +6,9 @@ output_dir = "output"
 name = "feff"
 
 [solver.config]
-feff_exec_file  = "../bin/feff85L"
-feff_output_file = "./chi.dat"
-remove_work_dir = true
+feff_exec_file  = "feff85L"
+feff_output_file = "chi.dat"
+#remove_work_dir = true
 #use_tmpdir = true
 
 [solver.param]

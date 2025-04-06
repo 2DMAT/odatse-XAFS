@@ -104,7 +104,7 @@ Solver, Runner, Algorithm の順にインスタンスを作成した後、Algori
 
 .. code-block::
 
-    $ cp ../../feff8.5light/build/feff85L .
+    $ cp ../feff/feff85L .
 
 メインプログラムを実行します。(計算時間は通常のPCで数分程度で終わります)
 
@@ -124,40 +124,54 @@ Solver, Runner, Algorithm の順にインスタンスを作成した後、Algori
     value_01 = 1.12000000
     value_02 = 0.96000000
     value_03 = -1.57000000
-    R-factor = 0.600274737286056 Polarization [0.0, 1.0, 0.0] R-factor1 = 0.351331393471473  Polarization [1.0, 0.0, 0.0] R-factor2 = 0.7068794828810981  Polarization [0.0, 0.0, 1.0] R-factor3 = 0.7426133355055966 
-    remove directory: Log00000000_00000000
+    R-factor = 0.7762817472030608 Polarization [0.0, 1.0, 0.0] R-factor1 = 0.26218705791753616  Polarization [1.0, 0.0, 0.0] R-factor2 = 0.3520528886264926  Polarization [0.0, 0.0, 1.0] R-factor3 = 1.7146052950651536 
     value_01 = 1.12000000
     value_02 = 0.96000000
     value_03 = -1.57000000
-    R-factor = 0.600274737286056 Polarization [0.0, 1.0, 0.0] R-factor1 = 0.351331393471473  Polarization [1.0, 0.0, 0.0] R-factor2 = 0.7068794828810981  Polarization [0.0, 0.0, 1.0] R-factor3 = 0.7426133355055966 
-    remove directory: Log00000001_00000000
+    R-factor = 0.7762817472030608 Polarization [0.0, 1.0, 0.0] R-factor1 = 0.26218705791753616  Polarization [1.0, 0.0, 0.0] R-factor2 = 0.3520528886264926  Polarization [0.0, 0.0, 1.0] R-factor3 = 1.7146052950651536 
     value_01 = 1.37000000
     value_02 = 0.96000000
     value_03 = -1.57000000
-    R-factor = 4.784551806438849 Polarization [0.0, 1.0, 0.0] R-factor1 = 1.3408785150447546  Polarization [1.0, 0.0, 0.0] R-factor2 = 2.312170159259668  Polarization [0.0, 0.0, 1.0] R-factor3 = 10.700606745012124 
-    remove directory: Log00000002_00000000
+    R-factor = 7.006992151846735 Polarization [0.0, 1.0, 0.0] R-factor1 = 2.097374935360426  Polarization [1.0, 0.0, 0.0] R-factor2 = 3.7994697622892972  Polarization [0.0, 0.0, 1.0] R-factor3 = 15.124131757890481 
     value_01 = 1.12000000
     value_02 = 1.21000000
     value_03 = -1.57000000
-    R-factor = 4.117191586678408 Polarization [0.0, 1.0, 0.0] R-factor1 = 1.8602662077424392  Polarization [1.0, 0.0, 0.0] R-factor2 = 1.3907386197304963  Polarization [0.0, 0.0, 1.0] R-factor3 = 9.100569932562289 
-    remove directory: Log00000003_00000000
+    R-factor = 5.73016510319226 Polarization [0.0, 1.0, 0.0] R-factor1 = 3.5024285153919115  Polarization [1.0, 0.0, 0.0] R-factor2 = 2.0041674778416843  Polarization [0.0, 0.0, 1.0] R-factor3 = 11.683899316343183 
     value_01 = 1.12000000
     value_02 = 0.96000000
     value_03 = -1.32000000
-    R-factor = 9.423169910838718 Polarization [0.0, 1.0, 0.0] R-factor1 = 3.3998266834700908  Polarization [1.0, 0.0, 0.0] R-factor2 = 7.455741765410984  Polarization [0.0, 0.0, 1.0] R-factor3 = 17.41394128363508 
-    remove directory: Log00000004_00000000
+    R-factor = 56.31862514558586 Polarization [0.0, 1.0, 0.0] R-factor1 = 6.4008790163862015  Polarization [1.0, 0.0, 0.0] R-factor2 = 9.109651695414557  Polarization [0.0, 0.0, 1.0] R-factor3 = 153.44534472495684 
+    value_01 = 1.28666667
+    value_02 = 1.12666667
+    value_03 = -1.82000000
+    R-factor = 32.91890925644038 Polarization [0.0, 1.0, 0.0] R-factor1 = 2.2301127998431753  Polarization [1.0, 0.0, 0.0] R-factor2 = 5.050496886392638  Polarization [0.0, 0.0, 1.0] R-factor3 = 91.47611808308534 
+    value_01 = 1.24500000
+    value_02 = 1.08500000
+    value_03 = -1.69500000
+    R-factor = 14.218592101199897 Polarization [0.0, 1.0, 0.0] R-factor1 = 3.3863023885318193  Polarization [1.0, 0.0, 0.0] R-factor2 = 5.0060964449177945  Polarization [0.0, 0.0, 1.0] R-factor3 = 34.26337747015008 
+    eval: x=[ 1.12  0.96 -1.57], fun=0.7762817472030608
+    value_01 = 1.16166667
+    value_02 = 1.00166667
+    value_03 = -1.44500000
+    R-factor = 7.048842595863635 Polarization [0.0, 1.0, 0.0] R-factor1 = 1.224939069135288  Polarization [1.0, 0.0, 0.0] R-factor2 = 1.8540984688270858  Polarization [0.0, 0.0, 1.0] R-factor3 = 18.06749024962853 
+    value_01 = 1.18250000
+    value_02 = 1.02250000
+    value_03 = -1.50750000
+    R-factor = 0.4469433592171206 Polarization [0.0, 1.0, 0.0] R-factor1 = 0.2535379790399123  Polarization [1.0, 0.0, 0.0] R-factor2 = 0.20069518356682897  Polarization [0.0, 0.0, 1.0] R-factor3 = 0.8865969150446205 
+    eval: x=[ 1.1825  1.0225 -1.5075], fun=0.4469433592171206
     ...
 
+        
 ``value_01``, ``value_02``, ``value_03`` に各ステップでの候補パラメータと、その時の ``R-factor`` が出力されます。
 また各ステップでの計算結果は ``output/0/LogXXXX_YYYY`` (XXXX, YYYYはステップ数)のフォルダに出力されます。
 最終的に推定されたパラメータは、 ``output/res.dat`` に出力されます。今の場合、
 
 .. code-block::
 
-    fx = 0.5882857603777499
-    x_S = 1.152284911047407
-    y_S = 0.931495559770223
-    z_S = -1.5710799186906792
+    fx = 0.20606977805890725
+    x_S = 1.125299780290939
+    y_S = 0.9597181918334485
+    z_S = -1.596967599355829
 
 となります。リファレンス ref.txt が再現されていることが分かります。
 
