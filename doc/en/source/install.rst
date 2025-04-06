@@ -47,15 +47,29 @@ How to download and install
 
    - Download the source package from the distribution site, and compile the source files.
 
-     .. code-block:: bash
+     - Obtain the source package and create a build directory:
 
-	$ git clone https://github.com/eucall-software/feff8.5light.git
-	$ cd feff8.5light
-	$ mkdir build && cd build
-	$ cmake ..
-	$ make
+       .. code-block:: bash
 
-     The executable file ``feff85L`` will be generated.
+          $ git clone https://github.com/eucall-software/feff8.5light.git
+          $ cd feff8.5light
+          $ mkdir build && cd build
+
+     - For GCC (gfortran), compiler options are required as follows:
+
+       .. code-block:: bash
+
+          $ cmake -DCMAKE_Fortran_FLAGS="-fallow-argument-mismatch -std=legacy" ..
+          $ make
+
+     - For intel compiler (ifort), compiler executable is specified as follows:
+
+       .. code-block:: bash
+
+          $ cmake -DCMAKE_Fortran_COMPILER=ifort ..
+          $ make
+
+     If the compiliation is successful, an executable file ``feff85L`` will be generated.
      Put ``feff85L`` in a directory listed in the PATH environment variable, or specify the paths to these commands at run time.
      
 3. Install odatse-XAFS

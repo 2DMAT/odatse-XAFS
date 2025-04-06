@@ -15,36 +15,39 @@ First, you need to obtain the source package of odatse-XAFS from the repository.
      $ cd odatse-XAFS
 
 Next, you need to download the source files of FEFF from the repository, and build it.
+A setup script is provided for this proocess.
 
 .. code-block:: bash
 
-     $ git clone https://github.com/eucall-software/feff8.5light.git
-     $ cd feff8.5light
-     $ mkdir build && cd build
-     $ cmake ..
-     $ make
+     $ cd sample/feff
+     $ sh ./setup.sh
 
-You may need to add options to cmake according to your environment.
-When it is successful, ``feff85L`` will be created.
-		
+When it is successful, ``feff85L`` will be created in the current directory.
+
+.. note::
+
+   If you use intel Fortran compiler, you need to edit setup.sh before running the script.
+
+.. note::
+
+   In the abve setup script, a patch to FEFF is applied that suppresses output of several unused files to reduce the amount of temporal files.
+
 
 Calculation execution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In this tutorial, we will actually do the calculation using FEFF.
 The sample input files are located in ``sample/solver`` of odatse-XAFS.
-First, copy this folder to a suitable working folder ``work``.
 
 .. code-block::
 
-     $ cp -r sample/solver work
-     $ cd work
+     $ cd sample/solver
 
-Next, copy ``feff85L`` to ``work``.
+Next, copy ``feff85L`` to the current directory.
 
 .. code-block::
 
-     $ cp ../feff8.5light/build/feff85L .
+     $ cp ../feff/feff85L .
 
 Execute ``feff85L``. The input file is ``feff.inp``. (The name of the input file is fixed.)
 

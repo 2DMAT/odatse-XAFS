@@ -37,22 +37,36 @@ odatse-XAFS のインストール
 
 	
      ``--user`` オプションを付けるとローカル (``$HOME/.local``) にインストールできます。
-	    
+	
      ``python3 -m pip install .[all]`` を実行するとオプションのパッケージも同時にインストールします。
-	  
+	
 2. FEFF をインストールする
 
-   - 配布サイトからソースコードを取得し、コンパイルします。必要に応じて CMakeLists.txt 等を編集してください。
+   - 配布サイトからソースコードを取得し、コンパイルします。
 
-     .. code-block:: bash
+     - コードの取得:
 
-	$ git clone https://github.com/eucall-software/feff8.5light.git
-	$ cd feff8.5light
-	$ mkdir build && cd build
-	$ cmake ..
-	$ make
+       .. code-block:: bash
 
-     実行形式 ``feff85L`` が作成されます。
+          $ git clone https://github.com/eucall-software/feff8.5light.git
+          $ cd feff8.5light
+          $ mkdir build && cd build
+
+     - GCC (gfortran) の場合はコンパイラオプションを指定してビルドする必要があります。
+	
+       .. code-block:: bash
+
+          $ cmake -DCMAKE_Fortran_FLAGS="-fallow-argument-mismatch -std=legacy" ..
+          $ make
+
+     - intel compiler (ifort) の場合は次のようにコンパイラを指定してビルドします。
+
+       .. code-block:: bash
+
+          $ cmake -DCMAKE_Fortran_COMPILER=ifort ..
+          $ make
+
+     ビルドに成功すると実行形式 ``feff85L`` が作成されます。
      ``feff85L`` を PATH の通ったディレクトリ (環境変数 PATH に列挙された、実行プログラムを探索するディレクトリ) に配置するか、実行時にディレクトリ名をつけて指定します。
 
 3. odatse-XAFS をインストールする
@@ -68,7 +82,7 @@ odatse-XAFS のインストール
 	$ python3 -m pip install .
 
      ``--user`` オプションを付けるとローカル (``$HOME/.local``) にインストールできます。
-	    
+	
      odatse-XAFS のライブラリと、実行コマンド ``odatse-XAFS`` がインストールされます。
 
 
