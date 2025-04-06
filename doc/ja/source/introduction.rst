@@ -30,7 +30,7 @@ odatse-XAFS は、この FEFF を ODAT-SE の順問題ソルバとして利用�
 | 本ソフトウェアのプログラムパッケージおよびソースコード一式はGNU
   General Public License version 3 (GPL v3) に準じて配布されています。
 
-Copyright (c) <2024-> The University of Tokyo. All rights reserved.
+Copyright (c) <2025-> The University of Tokyo. All rights reserved.
 
 本ソフトウェアは2024年度 東京大学物性研究所 ソフトウェア高度化プロジェクトの支援を受け開発されました。
 2DMAT / ODAT-SEを引用する際には以下の文献を引用してください。
@@ -58,7 +58,7 @@ Bibtex::
 
 odatse-XAFS
 
-- v1.0.0 : 2024-XX-XX
+- v1.0.0 : 2025-04-07
 
   
 主な開発者
