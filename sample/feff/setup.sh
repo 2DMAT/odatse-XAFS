@@ -17,14 +17,16 @@ if [ -d build ]; then
 fi
 mkdir build && cd build
 
+CMAKE_OPT="-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+
 #-- for gfortran 10 or later
-cmake -DCMAKE_Fortran_COMPILER="gfortran" -DCMAKE_Fortran_FLAGS="-fallow-argument-mismatch -std=legacy" ..
+cmake $CMAKE_OPT -DCMAKE_Fortran_COMPILER="gfortran" -DCMAKE_Fortran_FLAGS="-fallow-argument-mismatch -std=legacy" ..
 
 #-- for gfortran 9 or earlier
-#cmake -DCMAKE_Fortran_COMPILER="gfortran" -DCMAKE_Fortran_FLAGS="-Wno-argument-mismatch -std=legacy" ..
+#cmake $CMAKE_OPT -DCMAKE_Fortran_COMPILER="gfortran" -DCMAKE_Fortran_FLAGS="-Wno-argument-mismatch -std=legacy" ..
 
 #-- for intel compiler, use the following line instead of the above.
-#cmake -DCMAKE_Fortran_COMPILER="ifort" ..
+#cmake $CMAKE_OPT -DCMAKE_Fortran_COMPILER="ifort" ..
 
 make
 
