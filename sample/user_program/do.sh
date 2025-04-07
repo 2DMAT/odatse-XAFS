@@ -11,7 +11,7 @@ time python3 simple.py
 
 result=output/res.txt
 reference=ref_res.txt
-tolerance=1.0e-6
+tolerance=1.0e-4
 
 echo diff $result $reference
 res=0

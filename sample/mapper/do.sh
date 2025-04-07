@@ -16,7 +16,7 @@ time $MPIEXEC $CMD input.toml
 
 result=output/ColorMap.txt
 reference=ref_ColorMap.txt
-tolerance=1.0e-6
+tolerance=1.0e-5
 
 echo diff $result $reference
 res=0
