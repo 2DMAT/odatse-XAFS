@@ -13,25 +13,24 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see http://www.gnu.org/licenses/.
-# 
+#
 
-from typing import List
-import itertools
 import os
 import sys
 import subprocess
-from pathlib import Path
-from tempfile import TemporaryDirectory
 import time
+
+from typing import List
+from pathlib import Path
 
 import numpy as np
 
 import odatse
 from .input import Input
 from .output import Output
-from .parameter import SolverInfo
-
-from pydantic import ValidationError
+from .parameter import parse_solver_info
+#from odatse.solver.util import Workdir, set_solver_path, run_by_subprocess
+from .util import Workdir, set_solver_path, run_by_subprocess
 
 class Solver(odatse.solver.SolverBase):
     """
@@ -50,30 +49,14 @@ class Solver(odatse.solver.SolverBase):
             Information required to configure the solver.
         """
         super().__init__(info)
-        self._name = "feff"
+        self._name = "xafs"
 
-        try:
-            info_solver = SolverInfo(**info.solver)
-        except ValidationError as e:
-            print("ERROR: {}".format(e))
-            sys.exit(1)
+        self.info = parse_solver_info(**info.solver)
 
-        p2solver = info_solver.config.feff_exec_file
-        if os.path.dirname(p2solver) != "":
-            # ignore ENV[PATH]
-            self.path_to_solver = self.root_dir / Path(p2solver).expanduser()
-        else:
-            for P in itertools.chain([self.root_dir], os.environ["PATH"].split(":")):
-                self.path_to_solver = Path(P) / p2solver
-                if os.access(self.path_to_solver, mode=os.X_OK):
-                    break
-        if not os.access(self.path_to_solver, mode=os.X_OK):
-            raise RuntimeError("ERROR: solver {} is not found".format(p2solver))
+        self.path_to_solver = set_solver_path(self.info.config.feff_exec_file, self.root_dir)
 
-        self.use_tmpdir = info_solver.config.use_tmpdir
-
-        self.input = Input(info.base, info_solver)
-        self.output = Output(info.base, info_solver)
+        self.input = Input(info.base, self.info)
+        self.output = Output(self.info)
         self.result = None
 
     def evaluate(self, x: np.ndarray, args=(), nprocs: int = 1, nthreads: int = 1) -> float:
@@ -96,30 +79,19 @@ class Solver(odatse.solver.SolverBase):
         float
             Result of the evaluation.
         """
-        # assume current directory is self.proc_dir
-        if self.use_tmpdir:
-            owd = os.getcwd()
-            tmpdir = TemporaryDirectory()
-            os.chdir(tmpdir.name)
-            print("use_tmpdir: {}".format(tmpdir.name))
+        work_dir = "Log{:08d}_{:08d}".format(*args)
+        with Workdir(work_dir, remove=self.info.config.remove_work_dir, use_tmpdir=self.info.config.use_tmpdir):
 
-        fitted_x_list, workdir, subdirs = self.input.prepare(x, args)
+            subdirs = self.input.prepare(x, args)
 
-        cwd = os.getcwd()
-        for subdir in subdirs:
-            os.chdir(subdir)
-            self._run(nprocs, nthreads)
-            # time.sleep(3)
-            os.chdir(cwd)
+            cwd = os.getcwd()
+            for subdir in subdirs:
+                os.chdir(subdir)
+                self._run(nprocs, nthreads)
+                # time.sleep(3)
+                os.chdir(cwd)
 
-        result = self.output.get_results(fitted_x_list, subdirs)
-
-        self.input.post(workdir)
-
-        if self.use_tmpdir:
-            os.chdir(owd)
-            tmpdir.cleanup()
-
+            result = self.output.get_results(x, subdirs)
         return result
 
     def _run(self, nprocs: int = 1, nthreads: int = 1) -> None:
@@ -134,23 +106,6 @@ class Solver(odatse.solver.SolverBase):
             Number of threads to use. Defaults to 1.
         """
         try:
-            self._run_by_subprocess([str(self.path_to_solver)])
+            run_by_subprocess([str(self.path_to_solver)])
         except subprocess.CalledProcessError as e:
             print("WARNING: NO ATOMS CLOSE ENOUGH TO OVERLAP ATOM    1,  UNIQUE POT    0!!  Rmt set to Rnorman.  May be error in input file. {}".format(e))
-
-    def _run_by_subprocess(self, command: List[str]) -> None:
-        """
-        Run the solver using a subprocess.
-
-        Parameters
-        ----------
-        command : List[str]
-            Command to execute the solver.
-        """
-        with open("stdout", "w") as fi:
-            subprocess.run(
-                command,
-                stdout=fi,
-                stderr=subprocess.STDOUT,
-                check=True,
-            )

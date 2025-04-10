@@ -25,7 +25,6 @@ class Output(object):
     """
     Output manager for handling the results of the FEFF solver.
     """
-
     dimension: int
     string_list: List[str]
     feff_output_file: str
@@ -35,21 +34,19 @@ class Output(object):
     remove_work_dir: bool
     polarization: List[List[float]]
 
-    def __init__(self, info_base, info_solver):
+    def __init__(self, info_solver):
         """
         Initialize the Output class with the given base and solver information.
 
         Parameters
         ----------
-        info_base
-            Object containing base information.
         info_solver
             Object containing solver information.
         """
         if info_solver.dimension:
             self.dimension = info_solver.dimension
         else:
-            self.dimension = info_base["dimension"]
+            self.dimension = len(info_solver.param.string_list)
 
         # solver.config
         self.feff_output_file = info_solver.config.feff_output_file
@@ -90,13 +87,13 @@ class Output(object):
             eps = data[i+1][mask]
             self.exp_data.append((chi, eps))
 
-    def get_results(self, fitted_x_list, subdirs) -> float:
+    def get_results(self, x, subdirs) -> float:
         """
         Get Rfactor obtained by the solver program.
 
         Parameters
         ----------
-        fitted_x_list : list
+        x : list
             List of fitted x values.
         subdirs : list
             List of subdirectories containing the output files.
@@ -106,7 +103,6 @@ class Output(object):
         float
             The average R-factor value.
         """
-        dimension = self.dimension
         string_list = self.string_list
         polar_values = self.polarization
 
@@ -125,11 +121,14 @@ class Output(object):
         #if Rfactor <= 2:
         if True:
             # print("The R-factor value is less than 2.")
-            for idx in range(dimension):
-                print("{} = {}".format(string_list[idx], fitted_x_list[idx]))
+            for k, v in zip(string_list, x):
+                print(f"{k} = {v}")
             message = "R-factor = {}".format(Rfactor)
             for idx in range(len(subdirs)):
-                message += " Polarization {} R-factor{} = {} ".format(str(polar_values[idx]), idx+1, rfactors[idx])
+                message += " Polarization {} R-factor{} = {} ".format(
+                    str(polar_values[idx]),
+                    idx+1,
+                    rfactors[idx])
             print(message)
 
         return Rfactor

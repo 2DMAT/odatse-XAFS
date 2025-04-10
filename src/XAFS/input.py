@@ -21,12 +21,13 @@ import shutil
 from pathlib import Path
 from typing import List, Dict, Optional, TYPE_CHECKING
 
+#from odatse.solver.template import Template
+from .template import Template
 
 class Input(object):
     """
     Class for handling input preparation for the FEFF solver.
     """
-
     root_dir: Path
     output_dir: Path
     dimension: int
@@ -34,7 +35,6 @@ class Input(object):
     polarization_list: List[str]
     feff_input_file: Path
     feff_template_file: Path
-    fitted_x_list: List[str]
 
     def __init__(self, info_base, info_solver):
         """
@@ -53,7 +53,7 @@ class Input(object):
         if info_solver.dimension:
             self.dimension = info_solver.dimension
         else:
-            self.dimension = info_base["dimension"]
+            self.dimension = len(info_solver.param.string_list)
 
         # solver.param
         self.string_list = info_solver.param.string_list
@@ -74,13 +74,14 @@ class Input(object):
                 f"ERROR: feff_template_file ({self.feff_template_file}) does not exist"
             )
 
-        self._check_template()
-
-        feff_template_data=[]
-        with open(self.feff_template_file, 'r') as file_input:
-            for line in file_input:
-                feff_template_data.append(line.strip())
-        self.feff_template_data_origin = feff_template_data
+        format_list = {
+            "*": "{:.8f}",
+        }
+        self.tmpl = Template(
+            file=self.feff_template_file,
+            keywords=[*self.string_list, *self.polarization_list],
+            format=format_list,
+        )
 
     def prepare(self, x: np.ndarray, args):
         """
@@ -98,109 +99,8 @@ class Input(object):
         tuple
             Tuple containing fitted_x_list, workdir, and subdirs.
         """
-        x_list = x
-        step, iset = args
-
-        fitted_x_list = ["{:.8f}".format(v) for v in x_list]
-        workdir, subdirs = self._create_workdir(step , iset)
-        self._generate_input_file(fitted_x_list, workdir)
-
-        return fitted_x_list, workdir, subdirs
-
-    def post(self, work_dir):
-        """
-        Perform post-processing tasks such as removing the working directory.
-
-        Parameters
-        ----------
-        work_dir : Path
-            Path to the working directory.
-        """
-        if (not self.use_tmpdir) and self.remove_work_dir:
-            def rmtree_error_handler(function, path, excinfo):
-                print(f"WARNING: Failed to remove a working directory, {path}")
-            print("remove directory: {}".format(work_dir))
-            shutil.rmtree(work_dir, onerror=rmtree_error_handler)
-
-    def _generate_input_file(self, fitted_x_list, folder_name):
-        """
-        Generate the input file based on the template and fitted values.
-
-        Parameters
-        ----------
-        fitted_x_list : list
-            List of fitted values as strings.
-        folder_name : str
-            Name of the folder to save the input file.
-        """
-        polarization_list = self.polarization_list
-        polar_values = self.polarization
-        call_dir = self.call_dir
-
-        for index in range(len(call_dir)):
-            polar_value = polar_values[index]
-            call_dir_path = os.path.join(folder_name, call_dir[index])
-
-            input_file_path = os.path.join(call_dir_path, self.feff_input_file)
-
-            replaced_lines = []
-            for line in self.feff_template_data_origin:
-                for i in range(self.dimension):
-                    if self.string_list[i] in line:
-                        line = line.replace(self.string_list[i], fitted_x_list[i])
-                for j in range(len(polarization_list)):
-                    if polarization_list[j] in line:
-                        line = line.replace(polarization_list[j], str(polar_value[j]), 1)  # Replace only once
-                replaced_lines.append(line)
-
-            with open(input_file_path, "w") as file_output:
-                for line in replaced_lines:
-                    file_output.write(line + "\n")
-
-    def _check_template(self) -> None:
-        """
-        Check if all required labels appear in the template file.
-
-        Raises
-        ------
-        ValueError
-            If any label is missing in the template file.
-        """
-        found = [False] * self.dimension
-        with open(self.feff_template_file, "r") as file_input:
-            for line in file_input:
-                for index, keyword in enumerate(self.string_list):
-                    if keyword in line:
-                        found[index] = True
-        if not all(found):
-            msg = "ERROR: the following labels do not appear in the template file: "
-            msg += ", ".join([v for i, v in enumerate(self.string_list) if not found[i]])
-            raise ValueError(msg)
-
-    def _create_workdir(self, Log_number , iset):
-        """
-        Create the working directory and subdirectories.
-
-        Parameters
-        ----------
-        Log_number : int
-            Log number for the directory name.
-        iset : int
-            Set number for the directory name.
-
-        Returns
-        -------
-        tuple
-            Tuple containing the workdir and list of subdirs.
-        """
-        workdir = "Log{:08d}_{:08d}".format(Log_number, iset)
-        os.makedirs(workdir, exist_ok=True)
-
-        subdirs = []
-        for dir_name in self.call_dir:
-            subdir = os.path.join(workdir, dir_name)
+        for idx, subdir in enumerate(self.call_dir):
             os.makedirs(subdir, exist_ok=True)
-            subdirs.append(subdir)
+            self.tmpl.generate([*x, *self.polarization[idx]], output=os.path.join(subdir, self.feff_input_file))
 
-        return workdir, subdirs
-
+        return self.call_dir
