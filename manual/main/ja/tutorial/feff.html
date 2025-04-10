@@ -5,13 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>XAFS 順問題ソルバー &#8212; ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0-dev ドキュメント</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=f63d8bfa" />
-    <link rel="stylesheet" type="text/css" href="../_static/haiku.css?v=dfa0e015" />
-    <script src="../_static/documentation_options.js?v=3b7831b5"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <title>XAFS 順問題ソルバー &#8212; ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0.0 ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=47202671" />
+    <link rel="stylesheet" type="text/css" href="../_static/haiku.css?v=fce32b03" />
+    <script src="../_static/documentation_options.js?v=144c8c96"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/translations.js?v=91613774"></script>
+    <script src="../_static/translations.js?v=4755f45a"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
@@ -19,7 +19,7 @@
     <link rel="prev" title="チュートリアル" href="index.html" /> 
   </head><body>
       <div class="header" role="banner"><h1 class="heading"><a href="../index.html">
-          <span>ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0-dev ドキュメント</span></a></h1>
+          <span>ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0.0 ドキュメント</span></a></h1>
         <h2 class="heading"><span>XAFS 順問題ソルバー</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="Top">
@@ -41,33 +41,36 @@
 <p>最初に、チュートリアルを行うために必要な FEFF のインストールおよびテストを行います。</p>
 <section id="id1">
 <h2>ダウンロード・インストール<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
-<p>あらかじめ odatse-XAFS のソースコードをリポジトリから取得しておきます。</p>
+<p>odatse-XAFS のソースコードをリポジトリから取得します。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/2DMAT/odatse-XAFS.git
 $<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>odatse-XAFS
 </pre></div>
 </div>
-<p>FEFF 8.5 light のソースコード一式を配布サイトのリポジトリから取得し、ビルドします。</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/eucall-software/feff8.5light.git
-$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>feff8.5light
-$<span class="w"> </span>mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
-$<span class="w"> </span>cmake<span class="w"> </span>..
-$<span class="w"> </span>make
+<p>FEFF 8.5 light のソースコード一式を配布サイトのリポジトリから取得し、ビルドします。
+セットアップスクリプトが sample/feff/setup.sh に用意されています。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>sample/feff
+$<span class="w"> </span>sh<span class="w"> </span>./setup.sh
 </pre></div>
 </div>
-<p>cmake のオプション等は実行環境に応じて適宜指定してください。
-makeが成功すると <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> が作成されます。</p>
+<p>ビルドが成功すると、現在のディレクトリ内に <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> が作成されます。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>intel Fortran コンパイラを利用する場合は、setup.sh の内容を書き換えて実行してください。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>上記のセットアップスクリプトでは、FEFFが出力する中間ファイルのサイズを減らすため、不要なファイルの出力を抑制するパッチを適用しています。</p>
+</div>
 </section>
 <section id="id2">
 <h2>計算実行<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <p>このチュートリアルでは実際に FEFF を使った計算をしてみます。
-サンプルとなる入力ファイルは odatse-XAFS の <code class="docutils literal notranslate"><span class="pre">sample/solver</span></code> 以下にあります。
-まず、このフォルダを適当な作業用フォルダ <code class="docutils literal notranslate"><span class="pre">work</span></code> にコピーします。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cp -r sample/solver work
-$ cd work
+サンプルとなる入力ファイルは odatse-XAFS の <code class="docutils literal notranslate"><span class="pre">sample/solver</span></code> 以下にあります。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd sample/solver
 </pre></div>
 </div>
-<p>次に <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> を <code class="docutils literal notranslate"><span class="pre">work</span></code> にコピーします。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cp ../feff8.5light/build/feff85L .
+<p>次に <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> を現在のディレクトリにコピーします。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cp ../feff/feff85L .
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">feff85L</span></code> を実行します。入力ファイルは <code class="docutils literal notranslate"><span class="pre">feff.inp</span></code> (ファイル名は固定) です。</p>
@@ -215,7 +218,7 @@ feff0001.dat  fort.39       log.dat     log6.dat  mod4.inp  phase.bin  xsect.bin
 
     <div class="footer" role="contentinfo">
     &#169; 著作権 2024-, Institute for Solid State Physics, University of Tokyo.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     </div>
   </body>
 </html>

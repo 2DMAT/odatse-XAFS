@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>XAFS Solver &#8212; ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0-dev documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../_static/haiku.css?v=dfa0e015" />
-    <script src="../_static/documentation_options.js?v=a2628a1b"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <title>XAFS Solver &#8212; ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/haiku.css?v=fce32b03" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -18,7 +18,7 @@
     <link rel="prev" title="Tutorials" href="index.html" /> 
   </head><body>
       <div class="header" role="banner"><h1 class="heading"><a href="../index.html">
-          <span>ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0-dev documentation</span></a></h1>
+          <span>ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0.0 documentation</span></a></h1>
         <h2 class="heading"><span>XAFS Solver</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="Top">
@@ -45,28 +45,31 @@
 $<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>odatse-XAFS
 </pre></div>
 </div>
-<p>Next, you need to download the source files of FEFF from the repository, and build it.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/eucall-software/feff8.5light.git
-$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>feff8.5light
-$<span class="w"> </span>mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
-$<span class="w"> </span>cmake<span class="w"> </span>..
-$<span class="w"> </span>make
+<p>Next, you need to download the source files of FEFF from the repository, and build it.
+A setup script is provided for this proocess.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>sample/feff
+$<span class="w"> </span>sh<span class="w"> </span>./setup.sh
 </pre></div>
 </div>
-<p>You may need to add options to cmake according to your environment.
-When it is successful, <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> will be created.</p>
+<p>When it is successful, <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> will be created in the current directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you use intel Fortran compiler, you need to edit setup.sh before running the script.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the abve setup script, a patch to FEFF is applied that suppresses output of several unused files to reduce the amount of temporal files.</p>
+</div>
 </section>
 <section id="calculation-execution">
 <h2>Calculation execution<a class="headerlink" href="#calculation-execution" title="Link to this heading">¶</a></h2>
 <p>In this tutorial, we will actually do the calculation using FEFF.
-The sample input files are located in <code class="docutils literal notranslate"><span class="pre">sample/solver</span></code> of odatse-XAFS.
-First, copy this folder to a suitable working folder <code class="docutils literal notranslate"><span class="pre">work</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cp -r sample/solver work
-$ cd work
+The sample input files are located in <code class="docutils literal notranslate"><span class="pre">sample/solver</span></code> of odatse-XAFS.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd sample/solver
 </pre></div>
 </div>
-<p>Next, copy <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> to <code class="docutils literal notranslate"><span class="pre">work</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cp ../feff8.5light/build/feff85L .
+<p>Next, copy <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> to the current directory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cp ../feff/feff85L .
 </pre></div>
 </div>
 <p>Execute <code class="docutils literal notranslate"><span class="pre">feff85L</span></code>. The input file is <code class="docutils literal notranslate"><span class="pre">feff.inp</span></code>. (The name of the input file is fixed.)</p>
@@ -215,7 +218,7 @@ The figure shows <span class="math notranslate nohighlight">\(\chi(k)\)</span> a
 
     <div class="footer" role="contentinfo">
     &#169; Copyright 2024-, Institute for Solid State Physics, University of Tokyo.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     </div>
   </body>
 </html>

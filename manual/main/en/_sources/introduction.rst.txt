@@ -30,7 +30,7 @@ License
 --------------------------------
 |  This package is distributed under GNU General Public License version 3 (GPL v3).
 
-Copyright (c) <2020-> The University of Tokyo. All rights reserved.
+Copyright (c) <2025-> The University of Tokyo. All rights reserved.
 
 This software was developed with the support of "Project for advancement of software usability in materials science" of The Institute for Solid State Physics, The University of Tokyo.
 We hope that you cite the following reference when you publish the results using 2DMAT / ODAT-SE:
@@ -57,7 +57,7 @@ Version Information
 
 odatse-XAFS
 
-- v1.0.0: 2024-XX-XX
+- v1.0.0: 2025-04-07
 
 
 Main developers

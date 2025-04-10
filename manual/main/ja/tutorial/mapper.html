@@ -5,13 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>グリッド型探索 &#8212; ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0-dev ドキュメント</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=f63d8bfa" />
-    <link rel="stylesheet" type="text/css" href="../_static/haiku.css?v=dfa0e015" />
-    <script src="../_static/documentation_options.js?v=3b7831b5"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <title>グリッド型探索 &#8212; ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0.0 ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=47202671" />
+    <link rel="stylesheet" type="text/css" href="../_static/haiku.css?v=fce32b03" />
+    <script src="../_static/documentation_options.js?v=144c8c96"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/translations.js?v=91613774"></script>
+    <script src="../_static/translations.js?v=4755f45a"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
@@ -19,7 +19,7 @@
     <link rel="prev" title="XAFS 順問題ソルバー" href="feff.html" /> 
   </head><body>
       <div class="header" role="banner"><h1 class="heading"><a href="../index.html">
-          <span>ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0-dev ドキュメント</span></a></h1>
+          <span>ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0.0 ドキュメント</span></a></h1>
         <h2 class="heading"><span>グリッド型探索</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="Top">
@@ -144,9 +144,9 @@
 <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;feff&quot;</span>
 
 <span class="p">[</span><span class="n">solver</span><span class="o">.</span><span class="n">config</span><span class="p">]</span>
-<span class="n">feff_exec_file</span>  <span class="o">=</span> <span class="s2">&quot;../bin/feff85L&quot;</span>
-<span class="n">feff_output_file</span> <span class="o">=</span> <span class="s2">&quot;./chi.dat&quot;</span>
-<span class="n">remove_work_dir</span> <span class="o">=</span> <span class="n">true</span>
+<span class="n">feff_exec_file</span>  <span class="o">=</span> <span class="s2">&quot;feff85L&quot;</span>
+<span class="n">feff_output_file</span> <span class="o">=</span> <span class="s2">&quot;chi.dat&quot;</span>
+<span class="c1">#remove_work_dir = true</span>
 <span class="c1">#use_tmpdir = true</span>
 
 <span class="p">[</span><span class="n">solver</span><span class="o">.</span><span class="n">param</span><span class="p">]</span>
@@ -166,7 +166,7 @@
 <span class="p">[</span><span class="n">algorithm</span><span class="o">.</span><span class="n">param</span><span class="p">]</span>
 <span class="n">min_list</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">]</span>
 <span class="n">max_list</span> <span class="o">=</span> <span class="p">[</span> <span class="mf">2.0</span><span class="p">,</span>  <span class="mf">2.0</span><span class="p">]</span>
-<span class="n">num_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">41</span><span class="p">,</span> <span class="mi">41</span><span class="p">]</span>
+<span class="n">num_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">21</span><span class="p">,</span> <span class="mi">21</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>最初に <code class="docutils literal notranslate"><span class="pre">[base]</span></code> セクションについて説明します。</p>
@@ -215,62 +215,61 @@
 </pre></div>
 </div>
 <p>順問題の時と同様に <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> をコピーします。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cp ../../feff8.5light/build/feff85L .
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cp ../feff/feff85L .
 </pre></div>
 </div>
-<p>メインプログラムを実行します(計算時間は通常のPCで10分程度で終わります)。</p>
+<p>メインプログラムを実行します。以下のコマンドではプロセス数4のMPI並列を用いた計算を行っています。(計算時間は通常のPCで数分程度で終わります。)</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mpiexec -np 4 odatse-XAFS input.toml | tee log.txt
 </pre></div>
 </div>
-<p>ここではプロセス数4のMPI並列を用いた計算を行っています。
-実行すると、output ディレクトリ内に各ランクのフォルダが作成され、その中にグリッドのidがついたサブフォルダ <code class="docutils literal notranslate"><span class="pre">LogXXXX_00000000</span></code>  (<code class="docutils literal notranslate"><span class="pre">XXXX</span></code> がグリッドのid) が作成されます
-以下の様な出力が標準出力に書き出されます。</p>
+<p>実行すると、output ディレクトリ内に各ランクのフォルダが作成され、その中にグリッドのidがついたサブフォルダ <code class="docutils literal notranslate"><span class="pre">LogXXXX_00000000</span></code>  (<code class="docutils literal notranslate"><span class="pre">XXXX</span></code> がグリッドのid) が作成されます。
+また、以下の様な出力が標準出力に書き出されます。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span>            <span class="p">:</span> <span class="n">mapper</span>
 <span class="n">label_list</span>      <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;x_S&#39;</span><span class="p">,</span> <span class="s1">&#39;y_S&#39;</span><span class="p">]</span>
 <span class="n">param</span><span class="o">.</span><span class="n">min_list</span>  <span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">param</span><span class="o">.</span><span class="n">max_list</span>  <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-<span class="n">param</span><span class="o">.</span><span class="n">num_list</span>  <span class="p">:</span> <span class="p">[</span><span class="mi">41</span><span class="p">,</span> <span class="mi">41</span><span class="p">]</span>
-<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">1681</span>
+<span class="n">param</span><span class="o">.</span><span class="n">num_list</span>  <span class="p">:</span> <span class="p">[</span><span class="mi">21</span><span class="p">,</span> <span class="mi">21</span><span class="p">]</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">441</span>
 <span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
 <span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
-<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">4.844740647136345</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.27493407174594</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">3.6169659676212285</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">8.642321902041868</span>
-<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000000_00000000</span>
-<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">2</span><span class="o">/</span><span class="mi">1681</span>
-<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.90000000</span>
-<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
-<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">4.868151722936279</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.3209654636690353</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">3.2810650215301114</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">9.00242468360969</span>
-<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000001_00000000</span>
-<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">3</span><span class="o">/</span><span class="mi">1681</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">19.739646449543752</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.23082630928769</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">3.745102742186708</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">53.243010297156864</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">2</span><span class="o">/</span><span class="mi">441</span>
 <span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.80000000</span>
 <span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
-<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">4.705703125161947</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.2501916741803463</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">2.7571748926393247</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">9.10974280866617</span>
-<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000002_00000000</span>
-<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">4</span><span class="o">/</span><span class="mi">1681</span>
-<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.70000000</span>
-<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
-<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">4.39649319022788</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.1206013940826995</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">2.2147936131325205</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">8.85408456346842</span>
-<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000003_00000000</span>
-<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">5</span><span class="o">/</span><span class="mi">1681</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">15.870615265918195</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.465225144249503</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">3.7116841611214517</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">41.43493649238363</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">3</span><span class="o">/</span><span class="mi">441</span>
 <span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.60000000</span>
 <span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
-<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">3.9604564867417746</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">1.983521919088911</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">1.743478238726725</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">8.154369302409687</span>
-<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000004_00000000</span>
-<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">6</span><span class="o">/</span><span class="mi">1681</span>
-<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.50000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">12.4966032440396</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">3.4464214082242046</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">2.6218600524063693</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">31.421528271488228</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">4</span><span class="o">/</span><span class="mi">441</span>
+<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.40000000</span>
 <span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
-<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">3.541334572415026</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">1.918749679792313</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">1.4179530692349396</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">7.287300968217825</span>
-<span class="n">remove</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Log00000005_00000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">11.698213396270965</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">3.4791684719050933</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">1.6240174174998872</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">29.991454299407913</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">5</span><span class="o">/</span><span class="mi">441</span>
+<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.20000000</span>
+<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">14.299726412681139</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">2.2280314879817467</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">1.5332463231108493</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">39.13790142695082</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">6</span><span class="o">/</span><span class="mi">441</span>
+<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.00000000</span>
+<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">21.44097816422594</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">3.7563622860968673</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">1.810765574876649</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">58.7558066317043</span>
+<span class="n">Iteration</span> <span class="p">:</span> <span class="mi">7</span><span class="o">/</span><span class="mi">441</span>
+<span class="nd">@x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.80000000</span>
+<span class="nd">@y</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.00000000</span>
+<span class="n">R</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">28.455902096414444</span> <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor1</span> <span class="o">=</span> <span class="mf">6.512305703044855</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor2</span> <span class="o">=</span> <span class="mf">2.004528093101423</span>  <span class="n">Polarization</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="n">R</span><span class="o">-</span><span class="n">factor3</span> <span class="o">=</span> <span class="mf">76.85087249309706</span>
 <span class="o">...</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">&#64;x</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;y</span></code> に各メッシュでの候補パラメータと、その時の <code class="docutils literal notranslate"><span class="pre">R-factor</span></code> が出力されます。
 最終的にグリッド上の全ての点で計算された <code class="docutils literal notranslate"><span class="pre">R-factor</span></code> は <code class="docutils literal notranslate"><span class="pre">output/ColorMap.txt</span></code> に出力されます。
 今回の場合は</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="mf">2.000000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">4.844741</span>
-<span class="o">-</span><span class="mf">1.900000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">4.868152</span>
-<span class="o">-</span><span class="mf">1.800000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">4.705703</span>
-<span class="o">-</span><span class="mf">1.700000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">4.396493</span>
-<span class="o">-</span><span class="mf">1.600000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">3.960456</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="mf">2.000000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">19.739646</span>
+<span class="o">-</span><span class="mf">1.800000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">15.870615</span>
+<span class="o">-</span><span class="mf">1.600000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">12.496603</span>
+<span class="o">-</span><span class="mf">1.400000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">11.698213</span>
+<span class="o">-</span><span class="mf">1.200000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">14.299726</span>
+<span class="o">-</span><span class="mf">1.000000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">21.440978</span>
+<span class="o">-</span><span class="mf">0.800000</span> <span class="o">-</span><span class="mf">2.000000</span> <span class="mf">28.455902</span>
 <span class="o">...</span>
 </pre></div>
 </div>
@@ -330,7 +329,7 @@ diff<span class="w"> </span>output/ColorMap.txt<span class="w"> </span>ref_Color
 
     <div class="footer" role="contentinfo">
     &#169; 著作権 2024-, Institute for Solid State Physics, University of Tokyo.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     </div>
   </body>
 </html>
