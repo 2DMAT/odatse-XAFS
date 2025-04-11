@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>XAFS Solver &#8212; ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/haiku.css?v=fce32b03" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Optimization by Grid search" href="mapper.html" />
+    <link rel="prev" title="Tutorials" href="index.html" /> 
+  </head><body>
+      <div class="header" role="banner"><h1 class="heading"><a href="../index.html">
+          <span>ODAT-SE solver module: odatse-XAFS for PTRF-XAFS 1.0.0 documentation</span></a></h1>
+        <h2 class="heading"><span>XAFS Solver</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="Top">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">Tutorials</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="mapper.html">Optimization by Grid search</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <section id="xafs-solver">
+<h1>XAFS Solver<a class="headerlink" href="#xafs-solver" title="Link to this heading">¶</a></h1>
+<p>In this section, we will explain how to install and test FEFF.</p>
+<section id="download-and-install">
+<h2>Download and Install<a class="headerlink" href="#download-and-install" title="Link to this heading">¶</a></h2>
+<p>First, you need to obtain the source package of odatse-XAFS from the repository.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/2DMAT/odatse-XAFS.git
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>odatse-XAFS
+</pre></div>
+</div>
+<p>Next, you need to download the source files of FEFF from the repository, and build it.
+A setup script is provided for this proocess.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>sample/feff
+$<span class="w"> </span>sh<span class="w"> </span>./setup.sh
+</pre></div>
+</div>
+<p>When it is successful, <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> will be created in the current directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you use intel Fortran compiler, you need to edit setup.sh before running the script.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the abve setup script, a patch to FEFF is applied that suppresses output of several unused files to reduce the amount of temporal files.</p>
+</div>
+</section>
+<section id="calculation-execution">
+<h2>Calculation execution<a class="headerlink" href="#calculation-execution" title="Link to this heading">¶</a></h2>
+<p>In this tutorial, we will actually do the calculation using FEFF.
+The sample input files are located in <code class="docutils literal notranslate"><span class="pre">sample/solver</span></code> of odatse-XAFS.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd sample/solver
+</pre></div>
+</div>
+<p>Next, copy <code class="docutils literal notranslate"><span class="pre">feff85L</span></code> to the current directory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cp ../feff/feff85L .
+</pre></div>
+</div>
+<p>Execute <code class="docutils literal notranslate"><span class="pre">feff85L</span></code>. The input file is <code class="docutils literal notranslate"><span class="pre">feff.inp</span></code>. (The name of the input file is fixed.)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./feff85L
+</pre></div>
+</div>
+<p>Then, the following log messages will be displayed, and a number of output files are generated.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Feff</span> <span class="mf">8.50</span><span class="n">L</span>
+<span class="n">Sample_data</span>
+<span class="n">Calculating</span> <span class="n">potentials</span> <span class="o">...</span>
+   <span class="n">free</span> <span class="n">atom</span> <span class="n">potential</span> <span class="ow">and</span> <span class="n">density</span> <span class="k">for</span> <span class="n">atom</span> <span class="nb">type</span>    <span class="mi">0</span>
+   <span class="n">free</span> <span class="n">atom</span> <span class="n">potential</span> <span class="ow">and</span> <span class="n">density</span> <span class="k">for</span> <span class="n">atom</span> <span class="nb">type</span>    <span class="mi">1</span>
+   <span class="n">free</span> <span class="n">atom</span> <span class="n">potential</span> <span class="ow">and</span> <span class="n">density</span> <span class="k">for</span> <span class="n">atom</span> <span class="nb">type</span>    <span class="mi">2</span>
+   <span class="n">initial</span> <span class="n">state</span> <span class="n">energy</span>
+   <span class="n">overlapped</span> <span class="n">potential</span> <span class="ow">and</span> <span class="n">density</span> <span class="k">for</span> <span class="n">unique</span> <span class="n">potential</span>    <span class="mi">0</span>
+   <span class="n">overlapped</span> <span class="n">potential</span> <span class="ow">and</span> <span class="n">density</span> <span class="k">for</span> <span class="n">unique</span> <span class="n">potential</span>    <span class="mi">1</span>
+   <span class="n">overlapped</span> <span class="n">potential</span> <span class="ow">and</span> <span class="n">density</span> <span class="k">for</span> <span class="n">unique</span> <span class="n">potential</span>    <span class="mi">2</span>
+   <span class="n">muffin</span> <span class="n">tin</span> <span class="n">radii</span> <span class="ow">and</span> <span class="n">interstitial</span> <span class="n">parameters</span>
+<span class="n">iph</span><span class="p">,</span> <span class="n">rnrm</span><span class="p">(</span><span class="n">iph</span><span class="p">)</span><span class="o">*</span><span class="n">bohr</span><span class="p">,</span> <span class="n">rmt</span><span class="p">(</span><span class="n">iph</span><span class="p">)</span><span class="o">*</span><span class="n">bohr</span><span class="p">,</span> <span class="n">folp</span><span class="p">(</span><span class="n">iph</span><span class="p">)</span>
+   <span class="mi">0</span>  <span class="mf">1.52927E+00</span>  <span class="mf">1.20700E+00</span>  <span class="mf">1.15000E+00</span>
+   <span class="mi">1</span>  <span class="mf">1.64543E+00</span>  <span class="mf">1.30998E+00</span>  <span class="mf">1.15000E+00</span>
+   <span class="mi">2</span>  <span class="mf">1.24843E+00</span>  <span class="mf">9.73397E-01</span>  <span class="mf">1.15000E+00</span>
+<span class="n">mu_old</span><span class="o">=</span>    <span class="o">-</span><span class="mf">0.301</span>
+<span class="n">Done</span> <span class="k">with</span> <span class="n">module</span> <span class="mi">1</span><span class="p">:</span> <span class="n">potentials</span><span class="o">.</span>
+<span class="n">Calculating</span> <span class="n">cross</span><span class="o">-</span><span class="n">section</span> <span class="ow">and</span> <span class="n">phases</span><span class="o">...</span>
+ <span class="mf">0.579139710436025</span>       <span class="mf">4.256845921991644E-004</span>  <span class="mf">2.895698552180123E-002</span>
+         <span class="mi">10</span>
+   <span class="n">absorption</span> <span class="n">cross</span> <span class="n">section</span>
+<span class="n">dx</span><span class="o">=</span>  <span class="mf">5.000000000000000E-002</span>
+   <span class="n">phase</span> <span class="n">shifts</span> <span class="k">for</span> <span class="n">unique</span> <span class="n">potential</span>    <span class="mi">0</span>
+   <span class="n">phase</span> <span class="n">shifts</span> <span class="k">for</span> <span class="n">unique</span> <span class="n">potential</span>    <span class="mi">1</span>
+   <span class="n">phase</span> <span class="n">shifts</span> <span class="k">for</span> <span class="n">unique</span> <span class="n">potential</span>    <span class="mi">2</span>
+<span class="n">Done</span> <span class="k">with</span> <span class="n">module</span> <span class="mi">2</span><span class="p">:</span> <span class="n">cross</span><span class="o">-</span><span class="n">section</span> <span class="ow">and</span> <span class="n">phases</span><span class="o">...</span>
+<span class="n">Preparing</span> <span class="n">plane</span> <span class="n">wave</span> <span class="n">scattering</span> <span class="n">amplitudes</span><span class="o">...</span>
+<span class="n">Searching</span> <span class="k">for</span> <span class="n">paths</span><span class="o">...</span>
+  <span class="n">WARNING</span><span class="p">:</span>  <span class="n">rmax</span> <span class="o">&gt;</span> <span class="n">distance</span> <span class="n">to</span> <span class="n">most</span> <span class="n">distant</span> <span class="n">atom</span><span class="o">.</span>
+            <span class="n">Some</span> <span class="n">paths</span> <span class="n">may</span> <span class="n">be</span> <span class="n">missing</span><span class="o">.</span>
+            <span class="n">rmax</span><span class="p">,</span> <span class="n">ratx</span>   <span class="mf">6.00000E+00</span>  <span class="mf">0.00000E+00</span>
+   <span class="n">Rmax</span>  <span class="mf">6.0000</span>  <span class="n">keep</span> <span class="ow">and</span> <span class="n">heap</span> <span class="n">limits</span>   <span class="mf">0.0000000</span>   <span class="mf">0.0000000</span>
+   <span class="n">Preparing</span> <span class="n">neighbor</span> <span class="n">table</span>
+   <span class="n">Paths</span> <span class="n">found</span>        <span class="mi">2</span>   <span class="p">(</span><span class="n">maxheap</span><span class="p">,</span> <span class="n">maxscatt</span>       <span class="mi">1</span>   <span class="mi">1</span><span class="p">)</span>
+<span class="n">Eliminating</span> <span class="n">path</span> <span class="n">degeneracies</span><span class="o">...</span>
+   <span class="n">Plane</span> <span class="n">wave</span> <span class="n">chi</span> <span class="n">amplitude</span> <span class="nb">filter</span>   <span class="mf">2.50</span><span class="o">%</span>
+   <span class="n">Unique</span> <span class="n">paths</span>      <span class="mi">2</span><span class="p">,</span>  <span class="n">total</span> <span class="n">paths</span>       <span class="mi">2</span>
+<span class="n">Done</span> <span class="k">with</span> <span class="n">module</span> <span class="mi">4</span><span class="p">:</span> <span class="n">pathfinder</span><span class="o">.</span>
+<span class="n">Calculating</span> <span class="n">EXAFS</span> <span class="n">parameters</span><span class="o">...</span>
+<span class="n">doing</span> <span class="n">ip</span> <span class="o">=</span>            <span class="mi">1</span>
+   <span class="n">Curved</span> <span class="n">wave</span> <span class="n">chi</span> <span class="n">amplitude</span> <span class="n">ratio</span>   <span class="mf">4.00</span><span class="o">%</span>
+   <span class="n">Discard</span> <span class="n">feff</span><span class="o">.</span><span class="n">dat</span> <span class="k">for</span> <span class="n">paths</span> <span class="k">with</span> <span class="n">cw</span> <span class="n">ratio</span> <span class="o">&lt;</span>   <span class="mf">2.67</span><span class="o">%</span>
+   <span class="n">path</span>  <span class="n">cw</span> <span class="n">ratio</span>     <span class="n">deg</span>    <span class="n">nleg</span>  <span class="n">reff</span>
+     <span class="mi">1</span>     <span class="mf">0.1000E+03</span>     <span class="mf">1.000</span>     <span class="mi">2</span>   <span class="mf">1.8833</span>
+     <span class="mi">2</span>     <span class="mf">0.3835E+02</span>     <span class="mf">1.000</span>     <span class="mi">2</span>   <span class="mf">2.1978</span>
+   <span class="mi">2</span> <span class="n">paths</span> <span class="n">kept</span><span class="p">,</span>    <span class="mi">2</span> <span class="n">examined</span><span class="o">.</span>
+<span class="n">Done</span> <span class="k">with</span> <span class="n">module</span> <span class="mi">5</span><span class="p">:</span> <span class="n">F_eff</span><span class="o">.</span>
+<span class="n">Calculating</span> <span class="n">chi</span><span class="o">...</span>
+<span class="n">feffdt</span><span class="p">,</span> <span class="n">feff</span><span class="o">.</span><span class="n">bin</span> <span class="n">to</span> <span class="n">feff</span><span class="o">.</span><span class="n">dat</span> <span class="n">conversion</span> <span class="n">Feff</span> <span class="mf">8.50</span><span class="n">L</span>
+<span class="n">Sample_data</span>                                                      <span class="n">Feff</span> <span class="mf">8.50</span><span class="n">L</span>
+<span class="n">POT</span>  <span class="n">Non</span><span class="o">-</span><span class="n">SCF</span><span class="p">,</span> <span class="n">core</span><span class="o">-</span><span class="n">hole</span><span class="p">,</span> <span class="n">AFOLP</span> <span class="p">(</span><span class="n">folp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">=</span> <span class="mf">1.150</span><span class="p">)</span>
+<span class="n">Abs</span>   <span class="n">Z</span><span class="o">=</span><span class="mi">28</span> <span class="n">Rmt</span><span class="o">=</span> <span class="mf">1.207</span> <span class="n">Rnm</span><span class="o">=</span> <span class="mf">1.529</span> <span class="n">K</span>  <span class="n">shell</span>
+<span class="n">Pot</span> <span class="mi">1</span> <span class="n">Z</span><span class="o">=</span><span class="mi">16</span> <span class="n">Rmt</span><span class="o">=</span> <span class="mf">1.310</span> <span class="n">Rnm</span><span class="o">=</span> <span class="mf">1.645</span>
+<span class="n">Pot</span> <span class="mi">2</span> <span class="n">Z</span><span class="o">=</span> <span class="mi">8</span> <span class="n">Rmt</span><span class="o">=</span> <span class="mf">0.973</span> <span class="n">Rnm</span><span class="o">=</span> <span class="mf">1.248</span>
+<span class="n">Gam_ch</span><span class="o">=</span><span class="mf">1.576E+00</span> <span class="n">H</span><span class="o">-</span><span class="n">L</span> <span class="n">exch</span> <span class="n">Vi</span><span class="o">=</span> <span class="mf">0.000E+00</span> <span class="n">Vr</span><span class="o">=-</span><span class="mf">5.000E+00</span>
+<span class="n">Mu</span><span class="o">=-</span><span class="mf">3.013E-01</span> <span class="n">kf</span><span class="o">=</span><span class="mf">1.695E+00</span> <span class="n">Vint</span><span class="o">=-</span><span class="mf">1.125E+01</span> <span class="n">Rs_int</span><span class="o">=</span> <span class="mf">2.140</span>
+<span class="n">PATH</span>  <span class="n">Rmax</span><span class="o">=</span> <span class="mf">6.000</span><span class="p">,</span>  <span class="n">Keep_limit</span><span class="o">=</span> <span class="mf">0.00</span><span class="p">,</span> <span class="n">Heap_limit</span> <span class="mf">0.00</span>  <span class="n">Pwcrit</span><span class="o">=</span> <span class="mf">2.50</span><span class="o">%</span>
+      <span class="mi">2</span> <span class="n">paths</span> <span class="n">to</span> <span class="n">process</span>
+   <span class="n">path</span>     <span class="n">filename</span>
+      <span class="mi">1</span>     <span class="n">feff0001</span><span class="o">.</span><span class="n">dat</span>
+      <span class="mi">2</span>     <span class="n">feff0002</span><span class="o">.</span><span class="n">dat</span>
+   <span class="n">Use</span> <span class="nb">all</span> <span class="n">paths</span> <span class="k">with</span> <span class="n">cw</span> <span class="n">amplitude</span> <span class="n">ratio</span>   <span class="mf">4.00</span><span class="o">%</span>
+   <span class="n">S02</span>  <span class="mf">1.000</span>  <span class="n">Global</span> <span class="n">sig2</span>  <span class="mf">0.00160</span>
+<span class="n">Done</span> <span class="k">with</span> <span class="n">module</span> <span class="mi">6</span><span class="p">:</span> <span class="n">DW</span> <span class="o">+</span> <span class="n">final</span> <span class="nb">sum</span> <span class="n">over</span> <span class="n">paths</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls
+atoms.dat     feff0002.dat  fpf0.dat    log1.dat  misc.dat  mod5.inp   pot.bin
+chi.dat       feff85L       geom.dat    log2.dat  mod1.inp  mod6.inp   run.log
+feff.bin      files.dat     global.dat  log4.dat  mod2.inp  mpse.dat   s02.inp
+feff.inp      fort.38       list.dat    log5.dat  mod3.inp  paths.dat  xmu.dat
+feff0001.dat  fort.39       log.dat     log6.dat  mod4.inp  phase.bin  xsect.bin
+</pre></div>
+</div>
+</section>
+<section id="visualization-of-calculation-result">
+<h2>Visualization of calculation result<a class="headerlink" href="#visualization-of-calculation-result" title="Link to this heading">¶</a></h2>
+<p>Among the output files, we will refer <code class="docutils literal notranslate"><span class="pre">chi.dat</span></code> for the spectrum data, whose contents are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sample_data                                                    Feff 8.50L</span>
+<span class="c1"># POT  Non-SCF, core-hole, AFOLP (folp(0)= 1.150)</span>
+<span class="c1"># Abs   Z=28 Rmt= 1.207 Rnm= 1.529 K  shell</span>
+<span class="c1"># Pot 1 Z=16 Rmt= 1.310 Rnm= 1.645</span>
+<span class="c1"># Pot 2 Z= 8 Rmt= 0.973 Rnm= 1.248</span>
+<span class="c1"># Gam_ch=1.576E+00 H-L exch Vi= 0.000E+00 Vr=-5.000E+00</span>
+<span class="c1"># Mu=-3.013E-01 kf=1.695E+00 Vint=-1.125E+01 Rs_int= 2.140</span>
+<span class="c1"># PATH  Rmax= 6.000,  Keep_limit= 0.00, Heap_limit 0.00  Pwcrit= 2.50%</span>
+<span class="c1">#  S02=1.000                                        Global_sig2= 0.00160</span>
+<span class="c1">#  Curved wave amplitude ratio filter   4.000%</span>
+<span class="c1">#     file         sig2 tot  cw amp ratio   deg  nlegs   reff  inp sig2</span>
+<span class="c1">#           1       0.00160    100.00      1.00     2   1.8833</span>
+<span class="c1">#           2       0.00160     38.35      1.00     2   2.1978</span>
+<span class="c1">#     2/   2 paths used</span>
+<span class="c1">#  -----------------------------------------------------------------------</span>
+<span class="c1">#       k          chi          mag           phase @#</span>
+     <span class="mf">0.0500</span>    <span class="mf">5.362812E-02</span>  <span class="mf">2.330458E-01</span>  <span class="mf">2.321993E-01</span>
+     <span class="mf">0.1000</span>    <span class="mf">5.425108E-02</span>  <span class="mf">2.327328E-01</span>  <span class="mf">2.352690E-01</span>
+     <span class="mf">0.1500</span>    <span class="mf">5.608660E-02</span>  <span class="mf">2.318076E-01</span>  <span class="mf">2.443784E-01</span>
+     <span class="mf">0.2000</span>    <span class="mf">5.790322E-02</span>  <span class="mf">2.308804E-01</span>  <span class="mf">2.534995E-01</span>
+     <span class="mf">0.2500</span>    <span class="mf">6.083927E-02</span>  <span class="mf">2.293763E-01</span>  <span class="mf">2.684505E-01</span>
+     <span class="mf">0.3000</span>    <span class="mf">6.372689E-02</span>  <span class="mf">2.278648E-01</span>  <span class="mf">2.834501E-01</span>
+     <span class="mf">0.3500</span>    <span class="mf">6.758157E-02</span>  <span class="mf">2.258418E-01</span>  <span class="mf">3.038991E-01</span>
+     <span class="mf">0.4000</span>    <span class="mf">7.135477E-02</span>  <span class="mf">2.237971E-01</span>  <span class="mf">3.245020E-01</span>
+     <span class="mf">0.4500</span>    <span class="mf">7.589064E-02</span>  <span class="mf">2.213458E-01</span>  <span class="mf">3.499599E-01</span>
+     <span class="mf">0.5000</span>    <span class="mf">8.032632E-02</span>  <span class="mf">2.188382E-01</span>  <span class="mf">3.758443E-01</span>
+     <span class="mf">0.5500</span>    <span class="mf">8.527557E-02</span>  <span class="mf">2.160851E-01</span>  <span class="mf">4.056746E-01</span>
+     <span class="mf">0.6000</span>    <span class="mf">9.014607E-02</span>  <span class="mf">2.132012E-01</span>  <span class="mf">4.365566E-01</span>
+     <span class="mf">0.6500</span>    <span class="mf">9.528167E-02</span>  <span class="mf">2.103058E-01</span>  <span class="mf">4.701976E-01</span>
+     <span class="mf">0.7000</span>    <span class="mf">1.003518E-01</span>  <span class="mf">2.071479E-01</span>  <span class="mf">5.057289E-01</span>
+     <span class="mf">0.7500</span>    <span class="mf">1.057128E-01</span>  <span class="mf">2.043406E-01</span>  <span class="mf">5.437356E-01</span>
+
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>The lines starting with <code class="docutils literal notranslate"><span class="pre">#</span></code> are comments containing the information of calculation conditions and models.
+Then, the lines follow that contain the wave number <span class="math notranslate nohighlight">\(k\)</span> starting from the threshold (<span class="math notranslate nohighlight">\(k=0\)</span>), <span class="math notranslate nohighlight">\(\chi(k)\)</span>, <span class="math notranslate nohighlight">\(|\chi(k)|\)</span>, and the phase.
+The figure shows <span class="math notranslate nohighlight">\(\chi(k)\)</span> as a function of <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<figure class="align-default" id="id1">
+<img alt="../_images/plot_chi.png" src="../_images/plot_chi.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">An example of XAFS spectrum calculation using FEFF.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="Bottom">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">Tutorials</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="mapper.html">Optimization by Grid search</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024-, Institute for Solid State Physics, University of Tokyo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
