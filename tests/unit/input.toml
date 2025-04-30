@@ -6,7 +6,7 @@ output_dir = "output"
 name = "feff"
 
 [solver.config]
-feff_exec_file  = "../bin/feff85L"
+feff_exec_file  = "./mock_exec.py"
 feff_output_file = "./chi.dat"
 #remove_work_dir = true
 #use_tmpdir = true
